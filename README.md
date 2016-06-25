@@ -7,6 +7,10 @@ tidytext: Text mining using dplyr, ggplot2, and other tidy tools
 **License:** [MIT](https://opensource.org/licenses/MIT)
 
 [![Build Status](https://travis-ci.org/juliasilge/tidytext.svg?branch=master)](https://travis-ci.org/juliasilge/tidytext)
+[![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/juliasilge/tidytext?branch=master&svg=true)](https://ci.appveyor.com/project/juliasilge/tidytext)
+[![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/tidytext)](https://cran.r-project.org/package=tidytext)
+[![Coverage Status](https://img.shields.io/codecov/c/github/juliasilge/tidytext/master.svg)](https://codecov.io/github/juliasilge/tidytext?branch=master)
+
 
 
 
@@ -14,7 +18,15 @@ Using [tidy data principles](https://www.jstatsoft.org/article/view/v059i10) can
 
 ### Installation
 
-To install this package from Github, use devtools:
+You can install this package from CRAN:
+
+
+```r
+install.packages("tidytext")
+```
+
+
+Or you can install the development version from Github with [devtools](https://github.com/hadley/devtools):
 
 
 ```r
@@ -37,10 +49,10 @@ original_books <- austen_books() %>%
   ungroup()
 
 original_books
-#> Source: local data frame [70,942 x 3]
+#> Source: local data frame [73,422 x 3]
 #> 
 #>                     text                book linenumber
-#>                    (chr)              (fctr)      (int)
+#>                    <chr>              <fctr>      <int>
 #> 1  SENSE AND SENSIBILITY Sense & Sensibility          1
 #> 2                        Sense & Sensibility          2
 #> 3         by Jane Austen Sense & Sensibility          3
@@ -63,10 +75,10 @@ tidy_books <- original_books %>%
   unnest_tokens(word, text)
 
 tidy_books
-#> Source: local data frame [724,971 x 3]
+#> Source: local data frame [725,054 x 3]
 #> 
 #>                   book linenumber        word
-#>                 (fctr)      (int)       (chr)
+#>                 <fctr>      <int>       <chr>
 #> 1  Sense & Sensibility          1       sense
 #> 2  Sense & Sensibility          1         and
 #> 3  Sense & Sensibility          1 sensibility
@@ -80,7 +92,7 @@ tidy_books
 #> ..                 ...        ...         ...
 ```
 
-This function uses the [tokenizers package](https://github.com/lmullen/tokenizers) to separate each line into words. The default tokenizing is for words, but other options include characters, sentences, lines, paragraphs, or separation around a regex pattern.
+This function uses the [tokenizers package](https://github.com/lmullen/tokenizers) to separate each line into words. The default tokenizing is for words, but other options include characters, ngrams, sentences, lines, paragraphs, or separation around a regex pattern.
 
 Now that the data is in one-word-per-row format, we can manipulate it with tidy tools like dplyr. We can remove stop words (kept in the tidytext dataset `stop_words`) with an `anti_join`.
 
@@ -97,11 +109,11 @@ We can also use `count` to find the most common words in all the books as a whol
 ```r
 tidy_books %>%
   count(word, sort = TRUE) 
-#> Source: local data frame [13,896 x 2]
+#> Source: local data frame [13,914 x 2]
 #> 
 #>      word     n
-#>     (chr) (int)
-#> 1    miss  1854
+#>     <chr> <int>
+#> 1    miss  1855
 #> 2    time  1337
 #> 3   fanny   862
 #> 4    dear   822
@@ -127,7 +139,7 @@ bing
 #> Source: local data frame [6,788 x 3]
 #> 
 #>           word sentiment lexicon
-#>          (chr)     (chr)   (chr)
+#>          <chr>     <chr>   <chr>
 #> 1      2-faced  negative    bing
 #> 2      2-faces  negative    bing
 #> 3           a+  positive    bing
@@ -147,11 +159,11 @@ janeaustensentiment <- tidy_books %>%
   mutate(sentiment = positive - negative)
 
 janeaustensentiment
-#> Source: local data frame [891 x 5]
-#> Groups: book, index [891]
+#> Source: local data frame [920 x 5]
+#> Groups: book, index [920]
 #> 
 #>                   book index negative positive sentiment
-#>                 (fctr) (dbl)    (dbl)    (dbl)     (dbl)
+#>                 <fctr> <dbl>    <dbl>    <dbl>     <dbl>
 #> 1  Sense & Sensibility     0       16       26        10
 #> 2  Sense & Sensibility     1       19       44        25
 #> 3  Sense & Sensibility     2       12       23        11
@@ -176,73 +188,7 @@ ggplot(janeaustensentiment, aes(index, sentiment, fill = book)) +
   facet_wrap(~book, ncol = 2, scales = "free_x")
 ```
 
-![plot of chunk unnamed-chunk-8](README-unnamed-chunk-8-1.png)
-
-### Another example: the `pair_count` function
-
-Another function is `pair_count`, which counts pairs of items that occur together within a group. Let's count the words that occur together in the lines of *Pride and Prejudice*.
-
-
-```r
-pride_prejudice_words <- tidy_books %>%
-  filter(book == "Pride & Prejudice")
-pride_prejudice_words
-#> Source: local data frame [37,246 x 3]
-#> 
-#>                 book linenumber           word
-#>               (fctr)      (int)          (chr)
-#> 1  Pride & Prejudice      12441      pollution
-#> 2  Pride & Prejudice      12430      liberties
-#> 3  Pride & Prejudice      12425       sportive
-#> 4  Pride & Prejudice      12419     heretofore
-#> 5  Pride & Prejudice      12400       heedless
-#> 6  Pride & Prejudice      12397       expences
-#> 7  Pride & Prejudice      12381 congratulatory
-#> 8  Pride & Prejudice      12376     revolution
-#> 9  Pride & Prejudice      12372       moralize
-#> 10 Pride & Prejudice      12348       relished
-#> ..               ...        ...            ...
-
-word_cooccurences <- pride_prejudice_words %>%
-  pair_count(linenumber, word, sort = TRUE)
-
-word_cooccurences
-#> Source: local data frame [50,550 x 3]
-#> 
-#>       value1  value2     n
-#>        (chr)   (chr) (dbl)
-#> 1  catherine    lady    87
-#> 2    bingley    miss    68
-#> 3     bennet    miss    65
-#> 4      darcy    miss    46
-#> 5    william     sir    35
-#> 6     bourgh      de    32
-#> 7  elizabeth    miss    29
-#> 8  elizabeth    jane    27
-#> 9  elizabeth   cried    24
-#> 10   forster colonel    24
-#> ..       ...     ...   ...
-```
-
-This can be useful, for example, to plot a network of co-occuring words with the [igraph](http://igraph.org/) and [ggraph](https://github.com/thomasp85/ggraph) packages.
-
-
-```r
-library(igraph)
-library(ggraph)
-
-set.seed(2016)
-word_cooccurences %>%
-  filter(n >= 10) %>%
-  graph_from_data_frame() %>%
-  ggraph(layout = "fr") +
-  geom_edge_link(aes(edge_alpha = n, edge_width = n)) +
-  geom_node_point(color = "lightblue", size = 5) +
-  geom_node_text(aes(label = name), vjust = 1.8) +
-  theme_void()
-```
-
-![plot of chunk unnamed-chunk-10](README-unnamed-chunk-10-1.png)
+![plot of chunk unnamed-chunk-9](README-unnamed-chunk-9-1.png)
 
 For more examples of text mining using tidy data frames, see the tidytext vignette.
 
@@ -270,7 +216,7 @@ tidy(AssociatedPress)
 #> Source: local data frame [302,031 x 3]
 #> 
 #>    document       term count
-#>       (int)      (chr) (dbl)
+#>       <int>      <chr> <dbl>
 #> 1         1     adding     1
 #> 2         1      adult     2
 #> 3         1        ago     1
@@ -310,20 +256,20 @@ comparison <- tidy(AssociatedPress) %>%
          Austen = Austen / sum(Austen))
 
 comparison
-#> Source: local data frame [4,430 x 3]
+#> Source: local data frame [4,437 x 3]
 #> 
 #>          word           AP       Austen
-#>         (chr)        (dbl)        (dbl)
-#> 1   abandoned 2.101799e-04 7.095218e-06
-#> 2       abide 3.603084e-05 2.838087e-05
-#> 3   abilities 3.603084e-05 2.057613e-04
-#> 4     ability 2.942519e-04 2.128565e-05
-#> 5      abroad 2.402056e-04 2.554278e-04
-#> 6      abrupt 3.603084e-05 3.547609e-05
-#> 7     absence 9.608225e-05 7.875692e-04
-#> 8      absent 5.404626e-05 3.547609e-04
-#> 9    absolute 6.605654e-05 1.844757e-04
-#> 10 absolutely 2.101799e-04 6.740457e-04
+#>         <chr>        <dbl>        <dbl>
+#> 1   abandoned 2.097944e-04 7.093959e-06
+#> 2       abide 3.596475e-05 2.837584e-05
+#> 3   abilities 3.596475e-05 2.057248e-04
+#> 4     ability 2.937122e-04 2.128188e-05
+#> 5      abroad 2.397650e-04 2.553825e-04
+#> 6      abrupt 3.596475e-05 3.546980e-05
+#> 7     absence 9.590601e-05 7.874295e-04
+#> 8      absent 5.394713e-05 3.546980e-04
+#> 9    absolute 6.593538e-05 1.844429e-04
+#> 10 absolutely 2.097944e-04 6.739262e-04
 #> ..        ...          ...          ...
 
 library(scales)
@@ -336,10 +282,10 @@ ggplot(comparison, aes(AP, Austen)) +
   geom_abline(color = "red")
 ```
 
-![plot of chunk unnamed-chunk-14](README-unnamed-chunk-14-1.png)
+![plot of chunk unnamed-chunk-13](README-unnamed-chunk-13-1.png)
 
 For more examples of working with objects from other text mining packages using tidy data principles, see the vignette on converting to and from document term matrices.
 
-### Code of Conduct
+### Community Guidelines
 
-This project is released with a [Contributor Code of Conduct](CONDUCT.md). By participating in this project you agree to abide by its terms.
+This project is released with a [Contributor Code of Conduct](CONDUCT.md). By participating in this project you agree to abide by its terms. Feedback, bug reports (and fixes!), and feature requests are welcome; file issues or seek support [here](http://github.com/juliasilge/tidytext/issues).

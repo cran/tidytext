@@ -96,13 +96,18 @@ tidy_books %>%
                    max.words = 100)
 
 ## ------------------------------------------------------------------------
-austen_sentences <- austen_books() %>% 
-  group_by(book) %>% 
-  unnest_tokens(sentence, text, token = "sentences") %>% 
-  ungroup()
+PandP_sentences <- data_frame(text = prideprejudice) %>% 
+  unnest_tokens(sentence, text, token = "sentences")
 
 ## ------------------------------------------------------------------------
-austen_sentences$sentence[39]
+PandP_sentences$sentence[2]
+
+## ------------------------------------------------------------------------
+austen_chapters <- austen_books() %>%
+  group_by(book) %>%
+  unnest_tokens(chapter, text, token = "regex", pattern = "Chapter|CHAPTER [\\dIVXLC]") %>%
+  ungroup()
+austen_chapters %>% group_by(book) %>% summarise(chapters = n())
 
 ## ------------------------------------------------------------------------
 bingnegative <- sentiments %>%

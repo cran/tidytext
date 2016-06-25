@@ -6,10 +6,10 @@
 \title{Split a column into tokens using the tokenizers package}
 \usage{
 unnest_tokens_(tbl, output_col, input_col, token = "words", to_lower = TRUE,
-  drop = TRUE, ...)
+  drop = TRUE, collapse = NULL, ...)
 
 unnest_tokens(tbl, output, input, token = "words", to_lower = TRUE,
-  drop = TRUE, ...)
+  drop = TRUE, collapse = NULL, ...)
 }
 \arguments{
 \item{tbl}{Data frame}
@@ -18,15 +18,23 @@ unnest_tokens(tbl, output, input, token = "words", to_lower = TRUE,
 
 \item{input_col}{Input column that gets split}
 
-\item{token}{Unit for tokenizing. Options are "characters", "words",
-"sentences", "lines", "paragraphs", and "regex". Default is "words".}
+\item{token}{Unit for tokenizing, or a custom tokenizing function. Built-in
+options are "words" (default), "characters", "ngrams", "skip_ngrams",
+"sentences", "lines", "paragraphs", and "regex". If a function, should take
+a character vector and return a list of character vectors of the same length.}
 
 \item{to_lower}{Whether to turn column lowercase}
 
 \item{drop}{Whether original input column should get dropped. Ignored
 if the original input and new output column have the same name.}
 
-\item{...}{Extra arguments passed on to the tokenizer}
+\item{collapse}{Whether to combine text with newlines first in case tokens
+(such as sentences or paragraphs) span multiple lines. If NULL, collapses
+when token method is "ngrams", "skip_ngrams", "sentences", "lines",
+"paragraphs", or "regex"}
+
+\item{...}{Extra arguments passed on to the tokenizer, such as \code{n} and
+\code{k} for "ngrams" and "skip_ngrams" or \code{pattern} for "regex"}
 
 \item{output}{Output column to be created as bare name}
 
@@ -36,8 +44,9 @@ if the original input and new output column have the same name.}
 Split a column into tokens using the tokenizers package
 }
 \details{
-If the unit for tokenizing is sentences, lines, paragraphs, or
-regex, the entire input will be collapsed together before tokenizing.
+If the unit for tokenizing is ngrams, skip_ngrams, sentences, lines,
+paragraphs, or regex, the entire input will be collapsed together before
+tokenizing.
 }
 \examples{
 
@@ -51,7 +60,20 @@ d \%>\%
   unnest_tokens(word, txt)
 
 d \%>\%
-  unnest_tokens(word, txt, token = "sentences")
+  unnest_tokens(sentence, txt, token = "sentences")
+
+d \%>\%
+  unnest_tokens(ngram, txt, token = "ngrams", n = 2)
+
+d \%>\%
+  unnest_tokens(ngram, txt, token = "skip_ngrams", n = 4, k = 2)
+
+d \%>\%
+  unnest_tokens(chapter, txt, token = "regex", pattern = "Chapter [\\\\d]")
+
+# custom function
+d \%>\%
+  unnest_tokens(word, txt, token = stringr::str_split, pattern = " ")
 
 }
 

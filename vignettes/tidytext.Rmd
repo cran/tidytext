@@ -21,7 +21,7 @@ Using [tidy data principles](https://www.jstatsoft.org/article/view/v059i10) can
 
 ### A few first tidy text mining examples
 
-The novels of Jane Austen can be so tidy! Let's use the text of Jane Austen's 6 completed, published novels from the [janeaustenr](https://cran.r-project.org/package=janeaustenr) package, and bring them into a tidy format. janeaustenr provides them as a one-row-per-line format:
+The novels of Jane Austen can be so tidy! Let's use the text of Jane Austen's 6 completed, published novels from the [janeaustenr](https://cran.r-project.org/package=janeaustenr) package, and transform them into a tidy format. janeaustenr provides them as a one-row-per-line format:
 
 ```{r}
 library(janeaustenr)
@@ -48,7 +48,7 @@ tidy_books <- original_books %>%
 tidy_books
 ```
 
-This function uses the [tokenizers package](https://github.com/lmullen/tokenizers) to separate each line into words. The default tokenizing is for words, but other options include characters, sentences, lines, paragraphs, or separation around a regex pattern.
+This function uses the [tokenizers package](https://github.com/lmullen/tokenizers) to separate each line into words. The default tokenizing is for words, but other options include characters, ngrams, sentences, lines, paragraphs, or separation around a regex pattern.
 
 Now that the data is in one-word-per-row format, we can manipulate it with tidy tools like dplyr. We can remove stop words (kept in the tidytext dataset `stop_words`) with an `anti_join`.
 
@@ -166,21 +166,31 @@ Lots of useful work can be done by tokenizing at the word level, but sometimes i
 is a sad sentence, not a happy one, because of negation. The [Stanford CoreNLP](http://stanfordnlp.github.io/CoreNLP/) tools and the [sentimentr R package](https://github.com/trinker/sentimentr) (currently available on Github but not CRAN) are examples of such sentiment analysis algorithms. For these, we may want to tokenize text into sentences.
 
 ```{r}
-austen_sentences <- austen_books() %>% 
-  group_by(book) %>% 
-  unnest_tokens(sentence, text, token = "sentences") %>% 
-  ungroup()
+PandP_sentences <- data_frame(text = prideprejudice) %>% 
+  unnest_tokens(sentence, text, token = "sentences")
 ```
 
 Let's look at just one.
 
 ```{r}
-austen_sentences$sentence[39]
+PandP_sentences$sentence[2]
 ```
 
 The sentence tokenizing does seem to have a bit of trouble with UTF-8 encoded text, especially with sections of dialogue; it does much better with punctuation in ASCII.
 
-Near the beginning of this vignette, we used a regex to find where all the chapters were in Austen's novels. We can use tidy text analysis to ask questions such as what are the most negative chapters in each of Jane Austen's novels? First, let's get the list of negative words from the Bing lexicon. Second, let's make a dataframe of how many words are in each chapter so we can normalize for the length of chapters. Then, let's find the number of negative words in each chapter and divide by the total words in each chapter. Which chapter has the highest proportion of negative words?
+Another option in `unnest_tokens` is to split into tokens using a regex pattern. We could use this, for example, to split the text of Jane Austen's novels into a data frame by chapter.
+
+```{r}
+austen_chapters <- austen_books() %>%
+  group_by(book) %>%
+  unnest_tokens(chapter, text, token = "regex", pattern = "Chapter|CHAPTER [\\dIVXLC]") %>%
+  ungroup()
+austen_chapters %>% group_by(book) %>% summarise(chapters = n())
+```
+
+We have recovered the correct number of chapters in each novel (plus an "extra" row for each novel title). In this data frame, each row corresponds to one chapter.
+
+Near the beginning of this vignette, we used a similar regex to find where all the chapters were in Austen's novels for a tidy data frame organized by one-word-per-row. We can use tidy text analysis to ask questions such as what are the most negative chapters in each of Jane Austen's novels? First, let's get the list of negative words from the Bing lexicon. Second, let's make a dataframe of how many words are in each chapter so we can normalize for the length of chapters. Then, let's find the number of negative words in each chapter and divide by the total words in each chapter. Which chapter has the highest proportion of negative words?
 
 ```{r}
 bingnegative <- sentiments %>%
@@ -200,4 +210,4 @@ tidy_books %>%
   top_n(1)
 ```
 
-These are the chapters with the most sad words in each book, normalized for number of words in the chapter. What is happening in these chapters? In Chapter 43 of *Sense and Sensibility* Marianne is seriously ill, near death, and in Chapter 34 of *Pride and Prejudice* Mr. Darcy proposes for the first time (so badly!). Chapter 46 of *Mansfield Park* is almost the end, when everyone learns of Henry's scandalous adultery, Chapter 15 of *Emma* is when horrifying Mr. Elton proposes, and in Chapter 21 of *Northanger Abbey* Catherine is deep in her Gothic faux fantasy of murder/etc. Chapter 4 of *Persuasion* is when the reader gets the full flashback of Anne refusing Captain Wentworth and how sad she was and what a terrible mistake she realized it to be.
+These are the chapters with the most negative words in each book, normalized for number of words in the chapter. What is happening in these chapters? In Chapter 29 of *Sense and Sensibility* Marianne finds out what an awful person Willoughby is by letter, and in Chapter 34 of *Pride and Prejudice* Mr. Darcy proposes for the first time (so badly!). Chapter 45 of *Mansfield Park* is almost the end, when Tom is sick with consumption and Mary is revealed as mercenary and uncaring, Chapter 15 of *Emma* is when horrifying Mr. Elton proposes, and Chapter 27 of *Northanger Abbey* is a short chapter where Catherine gets a terrible letter from her inconstant friend Isabella. Chapter 21 of *Persuasion* is when Anne’s friend tells her all about Mr. Elliott’s immoral past.
