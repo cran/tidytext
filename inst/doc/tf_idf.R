@@ -1,6 +1,8 @@
 ## ----setup, echo=FALSE---------------------------------------------------
 library(knitr)
 opts_chunk$set(warning = FALSE, message = FALSE)
+library(ggplot2)
+theme_set(theme_light())
 
 ## ------------------------------------------------------------------------
 library(dplyr)

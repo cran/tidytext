@@ -10,7 +10,9 @@ vignette: >
 ---
 
 ```{r echo = FALSE}
-knitr::opts_chunk$set(fig.width = 7, fig.height = 7, warning = FALSE)
+knitr::opts_chunk$set(fig.width = 7, fig.height = 7, message = FALSE, warning = FALSE)
+library(ggplot2)
+theme_set(theme_bw())
 ```
 
 ### Tidying document-term matrices
@@ -35,12 +37,8 @@ ap_td <- tidy(AssociatedPress)
 Just as shown in [this vignette](tidytext.html), having the text in this format is convenient for analysis with the tidytext package. For example, you can perform sentiment analysis on these newspaper articles.
 
 ```{r}
-bing <- sentiments %>%
-  filter(lexicon == "bing") %>%
-  select(word, sentiment)
-
 ap_sentiments <- ap_td %>%
-  inner_join(bing, by = c(term = "word"))
+  inner_join(get_sentiments("bing"), by = c(term = "word"))
 
 ap_sentiments
 ```
@@ -194,7 +192,6 @@ You can show these models as a volcano plot, which compares the effect size with
 
 ```{r}
 library(ggplot2)
-theme_set(theme_bw())
 
 models %>%
   mutate(adjusted.p.value = p.adjust(p.value)) %>%

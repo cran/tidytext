@@ -12,6 +12,8 @@ vignette: >
 ```{r setup, echo=FALSE}
 library(knitr)
 opts_chunk$set(warning = FALSE, message = FALSE)
+library(ggplot2)
+theme_set(theme_light())
 ```
 
 
@@ -54,22 +56,22 @@ Now that the data is in one-word-per-row format, we can manipulate it with tidy 
 
 ```{r}
 data("stop_words")
-tidy_books <- tidy_books %>%
+cleaned_books <- tidy_books %>%
   anti_join(stop_words)
 ```
 
 We can also use `count` to find the most common words in all the books as a whole.
 
 ```{r}
-tidy_books %>%
+cleaned_books %>%
   count(word, sort = TRUE) 
 ```
 
-Sentiment analysis can be done as an inner join. Three sentiment lexicons are in the tidytext package in the `sentiment` dataset. Let's look at the words with a joy score from the NRC lexicon. What are the most common joy words in *Emma*?
+Sentiment analysis can be done as an inner join. Three sentiment lexicons are in the tidytext package in the `sentiments` dataset. Let's look at the words with a joy score from the NRC lexicon. What are the most common joy words in *Emma*?
 
 ```{r}
-nrcjoy <- sentiments %>%
-  filter(lexicon == "nrc", sentiment == "joy")
+nrcjoy <- get_sentiments("nrc") %>%
+  filter(sentiment == "joy")
 
 tidy_books %>%
   filter(book == "Emma") %>%
@@ -81,9 +83,7 @@ Or instead we could examine how sentiment changes during each novel. Let's find 
 
 ```{r}
 library(tidyr)
-bing <- sentiments %>%
-  filter(lexicon == "bing") %>%
-  select(-score)
+bing <- get_sentiments("bing")
 
 janeaustensentiment <- tidy_books %>%
   inner_join(bing) %>%
@@ -139,7 +139,7 @@ For example, consider the wordcloud package. Let's look at the most common words
 ```{r, fig.height=6, fig.width=6}
 library(wordcloud)
 
-tidy_books %>%
+cleaned_books %>%
   count(word) %>%
   with(wordcloud(word, n, max.words = 100))
 ```
@@ -185,7 +185,10 @@ austen_chapters <- austen_books() %>%
   group_by(book) %>%
   unnest_tokens(chapter, text, token = "regex", pattern = "Chapter|CHAPTER [\\dIVXLC]") %>%
   ungroup()
-austen_chapters %>% group_by(book) %>% summarise(chapters = n())
+
+austen_chapters %>% 
+  group_by(book) %>% 
+  summarise(chapters = n())
 ```
 
 We have recovered the correct number of chapters in each novel (plus an "extra" row for each novel title). In this data frame, each row corresponds to one chapter.
@@ -193,8 +196,8 @@ We have recovered the correct number of chapters in each novel (plus an "extra" 
 Near the beginning of this vignette, we used a similar regex to find where all the chapters were in Austen's novels for a tidy data frame organized by one-word-per-row. We can use tidy text analysis to ask questions such as what are the most negative chapters in each of Jane Austen's novels? First, let's get the list of negative words from the Bing lexicon. Second, let's make a dataframe of how many words are in each chapter so we can normalize for the length of chapters. Then, let's find the number of negative words in each chapter and divide by the total words in each chapter. Which chapter has the highest proportion of negative words?
 
 ```{r}
-bingnegative <- sentiments %>%
-  filter(lexicon == "bing", sentiment == "negative")
+bingnegative <- get_sentiments("bing") %>%
+  filter(sentiment == "negative")
 
 wordcounts <- tidy_books %>%
   group_by(book, chapter) %>%
@@ -210,4 +213,4 @@ tidy_books %>%
   top_n(1)
 ```
 
-These are the chapters with the most negative words in each book, normalized for number of words in the chapter. What is happening in these chapters? In Chapter 29 of *Sense and Sensibility* Marianne finds out what an awful person Willoughby is by letter, and in Chapter 34 of *Pride and Prejudice* Mr. Darcy proposes for the first time (so badly!). Chapter 45 of *Mansfield Park* is almost the end, when Tom is sick with consumption and Mary is revealed as mercenary and uncaring, Chapter 15 of *Emma* is when horrifying Mr. Elton proposes, and Chapter 27 of *Northanger Abbey* is a short chapter where Catherine gets a terrible letter from her inconstant friend Isabella. Chapter 21 of *Persuasion* is when Anne’s friend tells her all about Mr. Elliott’s immoral past.
+These are the chapters with the most negative words in each book, normalized for number of words in the chapter. What is happening in these chapters? In Chapter 43 of *Sense and Sensibility* Marianne is seriously ill, near death, and in Chapter 34 of *Pride and Prejudice* Mr. Darcy proposes for the first time (so badly!). Chapter 46 of *Mansfield Park* is almost the end, when everyone learns of Henry's scandalous adultery, Chapter 15 of *Emma* is when horrifying Mr. Elton proposes, and in Chapter 21 of *Northanger Abbey* Catherine is deep in her Gothic faux fantasy of murder, etc. Chapter 4 of *Persuasion* is when the reader gets the full flashback of Anne refusing Captain Wentworth and how sad she was and what a terrible mistake she realized it to be.

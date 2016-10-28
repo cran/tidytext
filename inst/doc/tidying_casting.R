@@ -1,5 +1,7 @@
 ## ----echo = FALSE--------------------------------------------------------
-knitr::opts_chunk$set(fig.width = 7, fig.height = 7, warning = FALSE)
+knitr::opts_chunk$set(fig.width = 7, fig.height = 7, message = FALSE, warning = FALSE)
+library(ggplot2)
+theme_set(theme_bw())
 
 ## ------------------------------------------------------------------------
 library(tm)
@@ -13,12 +15,8 @@ library(tidytext)
 ap_td <- tidy(AssociatedPress)
 
 ## ------------------------------------------------------------------------
-bing <- sentiments %>%
-  filter(lexicon == "bing") %>%
-  select(word, sentiment)
-
 ap_sentiments <- ap_td %>%
-  inner_join(bing, by = c(term = "word"))
+  inner_join(get_sentiments("bing"), by = c(term = "word"))
 
 ap_sentiments
 
@@ -133,7 +131,6 @@ models %>%
 
 ## ------------------------------------------------------------------------
 library(ggplot2)
-theme_set(theme_bw())
 
 models %>%
   mutate(adjusted.p.value = p.adjust(p.value)) %>%

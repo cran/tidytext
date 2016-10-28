@@ -1,18 +1,29 @@
 ## ----echo = FALSE---------------------------------------------------------------------------------
 library(knitr)
 opts_chunk$set(message = FALSE, warning = FALSE)
-
 options(width = 100, dplyr.width = 150)
+library(ggplot2)
+theme_set(theme_bw())
 
-## ----books----------------------------------------------------------------------------------------
+## ----packages-------------------------------------------------------------------------------------
 library(dplyr)
 library(gutenbergr)
 
-titles <- c("Twenty Thousand Leagues under the Sea", "The War of the Worlds",
-            "Pride and Prejudice", "Great Expectations")
-books <- gutenberg_works(title %in% titles) %>%
-  gutenberg_download(meta_fields = "title")
+## ----books_show, eval = FALSE---------------------------------------------------------------------
+#  titles <- c("Twenty Thousand Leagues under the Sea", "The War of the Worlds",
+#              "Pride and Prejudice", "Great Expectations")
+#  books <- gutenberg_works(title %in% titles) %>%
+#    gutenberg_download(meta_fields = "title")
 
+## ----books, echo = FALSE--------------------------------------------------------------------------
+# Downloading from Project Gutenberg can sometimes not work on automated servers
+# such as Travis-CI: see
+# https://github.com/ropenscilabs/gutenbergr/issues/6#issuecomment-231596903
+
+# this is a workaround
+load(system.file("extdata", "books.rda", package = "tidytext"))
+
+## -------------------------------------------------------------------------------------------------
 books
 
 ## ----word_counts----------------------------------------------------------------------------------

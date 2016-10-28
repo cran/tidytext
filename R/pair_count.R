@@ -22,6 +22,7 @@
 #'
 #' @examples
 #'
+#' \dontrun{
 #' library(janeaustenr)
 #' library(dplyr)
 #'
@@ -39,6 +40,7 @@
 #' pride_prejudice_words %>%
 #'   pair_count(line, word, sort = TRUE, unique_pair = FALSE) %>%
 #'   filter(value1 == "elizabeth")
+#' }
 #'
 #' @export
 pair_count <- function(data, group, value, unique_pair = TRUE,
@@ -56,8 +58,8 @@ pair_count_ <- function(data, group_col, value_col,
                         unique_pair = TRUE,
                         self = FALSE,
                         sort = FALSE) {
-  warning("pair_count is deprecated, see pairwise_count in the widyr ",
-          "package instead: https://github.com/dgrtwo/widyr")
+  stop("pair_count is deprecated, see pairwise_count in the widyr ",
+       "package instead: https://github.com/dgrtwo/widyr")
 
   requireNamespace("Matrix")
 

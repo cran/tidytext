@@ -10,6 +10,9 @@ tidytext: Text mining using dplyr, ggplot2, and other tidy tools
 [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/juliasilge/tidytext?branch=master&svg=true)](https://ci.appveyor.com/project/juliasilge/tidytext)
 [![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/tidytext)](https://cran.r-project.org/package=tidytext)
 [![Coverage Status](https://img.shields.io/codecov/c/github/juliasilge/tidytext/master.svg)](https://codecov.io/github/juliasilge/tidytext?branch=master)
+[![DOI](https://zenodo.org/badge/22224/juliasilge/tidytext.svg)](https://zenodo.org/badge/latestdoi/22224/juliasilge/tidytext)
+[![status](http://joss.theoj.org/papers/89fd1099620268fe0342ffdcdf66776f/status.svg)](http://joss.theoj.org/papers/89fd1099620268fe0342ffdcdf66776f)
+
 
 
 
@@ -49,8 +52,7 @@ original_books <- austen_books() %>%
   ungroup()
 
 original_books
-#> Source: local data frame [73,422 x 3]
-#> 
+#> # A tibble: 73,422 × 3
 #>                     text                book linenumber
 #>                    <chr>              <fctr>      <int>
 #> 1  SENSE AND SENSIBILITY Sense & Sensibility          1
@@ -63,7 +65,7 @@ original_books
 #> 8                        Sense & Sensibility          8
 #> 9                        Sense & Sensibility          9
 #> 10             CHAPTER 1 Sense & Sensibility         10
-#> ..                   ...                 ...        ...
+#> # ... with 73,412 more rows
 ```
 
 To work with this as a tidy dataset, we need to restructure it as **one-token-per-row** format. The `unnest_tokens` function is a way to convert a dataframe with a text column to be one-token-per-row:
@@ -75,8 +77,7 @@ tidy_books <- original_books %>%
   unnest_tokens(word, text)
 
 tidy_books
-#> Source: local data frame [725,054 x 3]
-#> 
+#> # A tibble: 725,054 × 3
 #>                   book linenumber        word
 #>                 <fctr>      <int>       <chr>
 #> 1  Sense & Sensibility          1       sense
@@ -89,10 +90,10 @@ tidy_books
 #> 8  Sense & Sensibility         10     chapter
 #> 9  Sense & Sensibility         10           1
 #> 10 Sense & Sensibility         13         the
-#> ..                 ...        ...         ...
+#> # ... with 725,044 more rows
 ```
 
-This function uses the [tokenizers package](https://github.com/lmullen/tokenizers) to separate each line into words. The default tokenizing is for words, but other options include characters, ngrams, sentences, lines, paragraphs, or separation around a regex pattern.
+This function uses the [tokenizers package](https://github.com/lmullen/tokenizers) to separate each line into words. The default tokenizing is for words, but other options include characters, n-grams, sentences, lines, paragraphs, or separation around a regex pattern.
 
 Now that the data is in one-word-per-row format, we can manipulate it with tidy tools like dplyr. We can remove stop words (kept in the tidytext dataset `stop_words`) with an `anti_join`.
 
@@ -109,8 +110,7 @@ We can also use `count` to find the most common words in all the books as a whol
 ```r
 tidy_books %>%
   count(word, sort = TRUE) 
-#> Source: local data frame [13,914 x 2]
-#> 
+#> # A tibble: 13,914 × 2
 #>      word     n
 #>     <chr> <int>
 #> 1    miss  1855
@@ -123,37 +123,32 @@ tidy_books %>%
 #> 8    emma   787
 #> 9  sister   727
 #> 10  house   699
-#> ..    ...   ...
+#> # ... with 13,904 more rows
 ```
 
-Sentiment analysis can be done as an inner join. Three sentiment lexicons are in the tidytext package in the `sentiment` dataset. Let's examine how sentiment changes changes during each novel. Let's find a sentiment score for each word using the Bing lexicon, then count the number of positive and negative words in defined sections of each novel.
+Sentiment analysis can be done as an inner join. Three sentiment lexicons are available via the `get_sentiments()` function. Let's examine how sentiment changes during each novel. Let's find a sentiment score for each word using the Bing lexicon, then count the number of positive and negative words in defined sections of each novel.
 
 
 ```r
 library(tidyr)
-bing <- sentiments %>%
-  filter(lexicon == "bing") %>%
-  select(-score)
-
-bing
-#> Source: local data frame [6,788 x 3]
-#> 
-#>           word sentiment lexicon
-#>          <chr>     <chr>   <chr>
-#> 1      2-faced  negative    bing
-#> 2      2-faces  negative    bing
-#> 3           a+  positive    bing
-#> 4     abnormal  negative    bing
-#> 5      abolish  negative    bing
-#> 6   abominable  negative    bing
-#> 7   abominably  negative    bing
-#> 8    abominate  negative    bing
-#> 9  abomination  negative    bing
-#> 10       abort  negative    bing
-#> ..         ...       ...     ...
+get_sentiments("bing")
+#> # A tibble: 6,788 × 2
+#>           word sentiment
+#>          <chr>     <chr>
+#> 1      2-faced  negative
+#> 2      2-faces  negative
+#> 3           a+  positive
+#> 4     abnormal  negative
+#> 5      abolish  negative
+#> 6   abominable  negative
+#> 7   abominably  negative
+#> 8    abominate  negative
+#> 9  abomination  negative
+#> 10       abort  negative
+#> # ... with 6,778 more rows
 
 janeaustensentiment <- tidy_books %>%
-  inner_join(bing) %>% 
+  inner_join(get_sentiments("bing"), by = "word") %>% 
   count(book, index = linenumber %/% 80, sentiment) %>% 
   spread(sentiment, n, fill = 0) %>% 
   mutate(sentiment = positive - negative)
@@ -174,7 +169,7 @@ janeaustensentiment
 #> 8  Sense & Sensibility     7       22       39        17
 #> 9  Sense & Sensibility     8       30       35         5
 #> 10 Sense & Sensibility     9       14       18         4
-#> ..                 ...   ...      ...      ...       ...
+#> # ... with 910 more rows
 ```
 
 Now we can plot these sentiment scores across the plot trajectory of each novel.
@@ -213,8 +208,7 @@ If we want to analyze this with tidy tools, we need to transform it into a one-r
 
 ```r
 tidy(AssociatedPress)
-#> Source: local data frame [302,031 x 3]
-#> 
+#> # A tibble: 302,031 × 3
 #>    document       term count
 #>       <int>      <chr> <dbl>
 #> 1         1     adding     1
@@ -227,7 +221,7 @@ tidy(AssociatedPress)
 #> 8         1   appeared     1
 #> 9         1   arrested     1
 #> 10        1    assault     1
-#> ..      ...        ...   ...
+#> # ... with 302,021 more rows
 ```
 
 We could find the most negative documents:
@@ -235,7 +229,7 @@ We could find the most negative documents:
 
 ```r
 ap_sentiments <- tidy(AssociatedPress) %>%
-  inner_join(bing, by = c(term = "word")) %>%
+  inner_join(get_sentiments("bing"), by = c(term = "word")) %>%
   count(document, sentiment, wt = count) %>%
   ungroup() %>%
   spread(sentiment, n, fill = 0) %>%
@@ -256,8 +250,7 @@ comparison <- tidy(AssociatedPress) %>%
          Austen = Austen / sum(Austen))
 
 comparison
-#> Source: local data frame [4,437 x 3]
-#> 
+#> # A tibble: 4,437 × 3
 #>          word           AP       Austen
 #>         <chr>        <dbl>        <dbl>
 #> 1   abandoned 2.097944e-04 7.093959e-06
@@ -270,7 +263,7 @@ comparison
 #> 8      absent 5.394713e-05 3.546980e-04
 #> 9    absolute 6.593538e-05 1.844429e-04
 #> 10 absolutely 2.097944e-04 6.739262e-04
-#> ..        ...          ...          ...
+#> # ... with 4,427 more rows
 
 library(scales)
 ggplot(comparison, aes(AP, Austen)) +

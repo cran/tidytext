@@ -1,6 +1,8 @@
 ## ----setup, echo=FALSE---------------------------------------------------
 library(knitr)
 opts_chunk$set(warning = FALSE, message = FALSE)
+library(ggplot2)
+theme_set(theme_light())
 
 ## ------------------------------------------------------------------------
 library(janeaustenr)
@@ -25,16 +27,16 @@ tidy_books
 
 ## ------------------------------------------------------------------------
 data("stop_words")
-tidy_books <- tidy_books %>%
+cleaned_books <- tidy_books %>%
   anti_join(stop_words)
 
 ## ------------------------------------------------------------------------
-tidy_books %>%
+cleaned_books %>%
   count(word, sort = TRUE) 
 
 ## ------------------------------------------------------------------------
-nrcjoy <- sentiments %>%
-  filter(lexicon == "nrc", sentiment == "joy")
+nrcjoy <- get_sentiments("nrc") %>%
+  filter(sentiment == "joy")
 
 tidy_books %>%
   filter(book == "Emma") %>%
@@ -43,9 +45,7 @@ tidy_books %>%
 
 ## ------------------------------------------------------------------------
 library(tidyr)
-bing <- sentiments %>%
-  filter(lexicon == "bing") %>%
-  select(-score)
+bing <- get_sentiments("bing")
 
 janeaustensentiment <- tidy_books %>%
   inner_join(bing) %>%
@@ -81,7 +81,7 @@ bing_word_counts %>%
 ## ---- fig.height=6, fig.width=6------------------------------------------
 library(wordcloud)
 
-tidy_books %>%
+cleaned_books %>%
   count(word) %>%
   with(wordcloud(word, n, max.words = 100))
 
@@ -107,11 +107,14 @@ austen_chapters <- austen_books() %>%
   group_by(book) %>%
   unnest_tokens(chapter, text, token = "regex", pattern = "Chapter|CHAPTER [\\dIVXLC]") %>%
   ungroup()
-austen_chapters %>% group_by(book) %>% summarise(chapters = n())
+
+austen_chapters %>% 
+  group_by(book) %>% 
+  summarise(chapters = n())
 
 ## ------------------------------------------------------------------------
-bingnegative <- sentiments %>%
-  filter(lexicon == "bing", sentiment == "negative")
+bingnegative <- get_sentiments("bing") %>%
+  filter(sentiment == "negative")
 
 wordcounts <- tidy_books %>%
   group_by(book, chapter) %>%

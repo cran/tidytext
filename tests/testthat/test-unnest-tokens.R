@@ -86,3 +86,81 @@ test_that("tokenizing with a custom function works", {
   expect_equal(d2$unit[2], "nobody")
   expect_equal(d2$unit[4], "you know!")
 })
+
+test_that("unnest_tokens raises an error if there is a list column present", {
+  d <- data_frame(a = c("hello world", "goodbye world"), b = list(1:2, 3:4))
+  expect_error(unnest_tokens(d, word, a), "atomic vectors")
+})
+
+test_that("unnest_tokens raises an error if custom tokenizer gives bad output", {
+  d <- data_frame(txt = "Emily Dickinson")
+
+  expect_error(unnest_tokens(d, word, txt, token = function(e) c("a", "b")),
+               "to be a list")
+  expect_error(unnest_tokens(d, word, txt, token = function(e) list("a", "b")),
+               "of length")
+})
+
+
+test_that("tokenizing HTML works", {
+  h <- data_frame(row = 1:2,
+                  text = c("<h1>Text <b>is<b>", "<a href='example.com'>here</a>"))
+
+  res1 <- unnest_tokens(h, word, text)
+  expect_gt(nrow(res1), 3)
+  expect_equal(res1$word[1], "h1")
+
+  res2 <- unnest_tokens(h, word, text, format = "html")
+  expect_equal(nrow(res2), 3)
+  expect_equal(res2$word, c("text", "is", "here"))
+  expect_equal(res2$row, c(1, 1, 2))
+})
+
+
+test_that("tokenizing LaTeX works", {
+  h <- data_frame(row = 1:4,
+                  text = c("\\textbf{text} \\emph{is}", "\\begin{itemize}",
+                           "\\item here", "\\end{itemize}"))
+
+  res1 <- unnest_tokens(h, word, text)
+  expect_gt(nrow(res1), 3)
+  expect_equal(res1$word[1], "textbf")
+
+  res2 <- unnest_tokens(h, word, text, format = "latex")
+  expect_equal(nrow(res2), 3)
+  expect_equal(res2$word, c("text", "is", "here"))
+  expect_equal(res2$row, c(1, 1, 3))
+})
+
+test_that("Tokenizing a one-column data.frame works", {
+  text <- data.frame(txt = c("Because I could not stop for Death -",
+                             "He kindly stopped for me -"),
+                     stringsAsFactors = FALSE)
+  d <- unnest_tokens(text, word, txt)
+
+  expect_is(d, "data.frame")
+  expect_equal(nrow(d), 12)
+  expect_equal(ncol(d), 1)
+  expect_equal(d$word[1], "because")
+})
+
+test_that("Tokenizing a two-column data.frame with one non-text column works", {
+  text <- data.frame(line = 1:2,
+                  txt = c("Because I could not stop for Death -",
+                          "He kindly stopped for me -"),
+                  stringsAsFactors = FALSE)
+  d <- unnest_tokens(text, word, txt)
+
+  expect_is(d, "data.frame")
+  expect_equal(nrow(d), 12)
+  expect_equal(ncol(d), 2)
+  expect_equal(d$word[1], "because")
+  expect_equal(d$line[1], 1)
+})
+
+test_that("Trying to tokenize a non-text format with words raises an error", {
+  d <- data_frame(txt = "Emily Dickinson")
+  expect_error(unnest_tokens(d, word, txt, token = "sentences", format = "latex"),
+               "except words")
+})
+
