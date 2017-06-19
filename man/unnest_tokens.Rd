@@ -5,19 +5,20 @@
 \alias{unnest_tokens_}
 \title{Split a column into tokens using the tokenizers package}
 \usage{
-unnest_tokens_(tbl, output_col, input_col, token = "words",
-  format = c("text", "man", "latex", "html", "xml"), to_lower = TRUE,
-  drop = TRUE, collapse = NULL, ...)
+unnest_tokens(tbl, output, input, token = "words", format = c("text", "man",
+  "latex", "html", "xml"), to_lower = TRUE, drop = TRUE, collapse = NULL,
+  ...)
 
-unnest_tokens(tbl, output, input, token = "words", to_lower = TRUE,
-  drop = TRUE, collapse = NULL, ...)
+unnest_tokens_(tbl, output, input, token = "words", format = c("text",
+  "man", "latex", "html", "xml"), to_lower = TRUE, drop = TRUE,
+  collapse = NULL, ...)
 }
 \arguments{
 \item{tbl}{Data frame}
 
-\item{output_col}{Output column to be created}
+\item{output}{Output column to be created as bare name.}
 
-\item{input_col}{Input column that gets split}
+\item{input}{Input column that gets split as bare name.}
 
 \item{token}{Unit for tokenizing, or a custom tokenizing function. Built-in
 options are "words" (default), "characters", "ngrams", "skip_ngrams",
@@ -27,7 +28,7 @@ a character vector and return a list of character vectors of the same length.}
 \item{format}{Either "text", "man", "latex", "html", or "xml". If not text,
 this uses the hunspell tokenizer, and can tokenize only by "word"}
 
-\item{to_lower}{Whether to turn column lowercase}
+\item{to_lower}{Whether to turn column lowercase.}
 
 \item{drop}{Whether original input column should get dropped. Ignored
 if the original input and new output column have the same name.}
@@ -35,17 +36,14 @@ if the original input and new output column have the same name.}
 \item{collapse}{Whether to combine text with newlines first in case tokens
 (such as sentences or paragraphs) span multiple lines. If NULL, collapses
 when token method is "ngrams", "skip_ngrams", "sentences", "lines",
-"paragraphs", or "regex"}
+"paragraphs", or "regex".}
 
 \item{...}{Extra arguments passed on to the tokenizer, such as \code{n} and
-\code{k} for "ngrams" and "skip_ngrams" or \code{pattern} for "regex"}
-
-\item{output}{Output column to be created as bare name}
-
-\item{input}{Input column that gets split as bare name}
+\code{k} for "ngrams" and "skip_ngrams" or \code{pattern} for "regex".}
 }
 \description{
-Split a column into tokens using the tokenizers package
+Split a column into tokens using the tokenizers package, splitting the table
+into one-token-per-row. \code{unnest_tokens_} is the standard evaluation version.
 }
 \details{
 If the unit for tokenizing is ngrams, skip_ngrams, sentences, lines,
@@ -91,4 +89,3 @@ h \%>\%
   unnest_tokens(word, text, format = "html")
 
 }
-

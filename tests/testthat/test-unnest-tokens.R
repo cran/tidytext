@@ -39,6 +39,8 @@ test_that("tokenizing by sentence works", {
   expect_equal(d$sentence[1], "i'm nobody!")
 })
 
+
+
 test_that("tokenizing by ngram and skip ngram works", {
   d2 <- data_frame(txt = c("Hope is the thing with feathers",
                            "That perches in the soul",
@@ -81,16 +83,42 @@ test_that("tokenizing with a custom function works", {
   expect_equal(d$unit[4], "too?")
 
   d2 <- orig %>%
-    unnest_tokens(unit, txt, token = stringr::str_split, pattern = " - ", collapse = TRUE)
+    unnest_tokens(unit, txt, token = stringr::str_split,
+                  pattern = " - ", collapse = TRUE)
   expect_equal(nrow(d2), 4)
   expect_equal(d2$unit[2], "nobody")
   expect_equal(d2$unit[4], "you know!")
+})
+
+test_that("tokenizing with standard evaluation works", {
+  d <- data_frame(txt = c("Because I could not stop for Death -",
+                          "He kindly stopped for me -"))
+  d <- d %>% unnest_tokens_("word", "txt")
+  expect_equal(nrow(d), 12)
+  expect_equal(ncol(d), 1)
+  expect_equal(d$word[1], "because")
+
 })
 
 test_that("unnest_tokens raises an error if there is a list column present", {
   d <- data_frame(a = c("hello world", "goodbye world"), b = list(1:2, 3:4))
   expect_error(unnest_tokens(d, word, a), "atomic vectors")
 })
+
+test_that("tokenizing with to_lower = FALSE works", {
+  orig <- data_frame(txt = c("Because I could not stop for Death -",
+                          "He kindly stopped for me -"))
+  d <- orig %>% unnest_tokens(word, txt, to_lower = FALSE)
+  expect_equal(nrow(d), 12)
+  expect_equal(ncol(d), 1)
+  expect_equal(d$word[1], "Because")
+  d2 <- orig %>% unnest_tokens(ngram, txt, token = "ngrams",
+                           n = 2, to_lower = FALSE)
+  expect_equal(nrow(d2), 11)
+  expect_equal(ncol(d2), 1)
+  expect_equal(d2$ngram[1], "Because I")
+})
+
 
 test_that("unnest_tokens raises an error if custom tokenizer gives bad output", {
   d <- data_frame(txt = "Emily Dickinson")
@@ -160,7 +188,59 @@ test_that("Tokenizing a two-column data.frame with one non-text column works", {
 
 test_that("Trying to tokenize a non-text format with words raises an error", {
   d <- data_frame(txt = "Emily Dickinson")
-  expect_error(unnest_tokens(d, word, txt, token = "sentences", format = "latex"),
+  expect_error(unnest_tokens(d, word, txt, token = "sentences",
+                             format = "latex"),
                "except words")
 })
+
+test_that("unnest_tokens keeps top-level attributes", {
+  # first check data.frame
+  d <- data.frame(row = 1:2,
+                         txt = c("Call me Ishmael.", "OK, I will."),
+                         stringsAsFactors = FALSE)
+
+  lst <- list(1, 2, 3, 4)
+  attr(d, "custom") <- lst
+  result <- unnest_tokens(d, word, txt)
+  expect_equal(attr(result, "custom"), lst)
+
+  # now tbl_df
+  d2 <- dplyr::tbl_df(d)
+  attr(d2, "custom") <- list(1, 2, 3, 4)
+  result <- unnest_tokens(d2, word, txt)
+  expect_equal(attr(result, "custom"), lst)
+})
+
+
+if (suppressPackageStartupMessages(require("data.table", quietly = TRUE))) {
+  test_that("Trying to tokenize a data.table works", {
+    text <- data.table(txt = "Write till my fingers look like a bouquet of roses",
+                       author = "Watsky")
+    output <- unnest_tokens(text, word, txt)
+    expect_equal(ncol(output), 2)
+    expect_equal(nrow(output), 10)
+    expect_equal(output$word[1], "write")
+    expect_equal(output$author[1], "Watsky")
+  })
+
+  test_that("Trying to tokenize a data.table work when the input has only one column", {
+    text <- data.table(txt = "You gotta bring yourself your flowers now in showbiz")
+    output <- unnest_tokens(text, word, txt)
+    expect_equal(ncol(output), 1)
+    expect_equal(nrow(output), 9)
+    expect_equal(output$word[1], "you")
+  })
+
+  test_that("custom attributes are preserved for a data.table", {
+    text <- data.table(txt = "You gotta bring yourself your flowers now in showbiz")
+    attr(text, "testattr") <- list(1, 2, 3, 4)
+
+    output <- unnest_tokens(text, word, txt)
+
+    expect_equal(ncol(output), 1)
+    expect_equal(nrow(output), 9)
+    expect_equal(output$word[1], "you")
+    expect_equal(attr(output, "testattr"), list(1, 2, 3, 4))
+  })
+}
 

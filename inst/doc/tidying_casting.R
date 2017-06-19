@@ -45,8 +45,10 @@ ap_sentiments %>%
   ylab("Contribution to sentiment")
 
 ## ------------------------------------------------------------------------
-data("inaugCorpus", package = "quanteda")
-d <- quanteda::dfm(inaugCorpus)
+library(methods)
+
+data("data_corpus_inaugural", package = "quanteda")
+d <- quanteda::dfm(data_corpus_inaugural, verbose = FALSE)
 
 d
 
@@ -88,11 +90,11 @@ reuters_td
 ## ------------------------------------------------------------------------
 library(quanteda)
 
-data("inaugCorpus")
+data("data_corpus_inaugural")
 
-inaugCorpus
+data_corpus_inaugural
 
-inaug_td <- tidy(inaugCorpus)
+inaug_td <- tidy(data_corpus_inaugural)
 inaug_td
 
 ## ------------------------------------------------------------------------
