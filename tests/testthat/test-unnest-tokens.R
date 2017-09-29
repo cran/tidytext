@@ -100,6 +100,18 @@ test_that("tokenizing with standard evaluation works", {
 
 })
 
+test_that("tokenizing with tidyeval works", {
+  d <- data_frame(txt = c("Because I could not stop for Death -",
+                          "He kindly stopped for me -"))
+  outputvar <- quo("word")
+  inputvar <- quo("txt")
+  d <- d %>% unnest_tokens(!!outputvar, !!inputvar)
+  expect_equal(nrow(d), 12)
+  expect_equal(ncol(d), 1)
+  expect_equal(d$word[1], "because")
+
+})
+
 test_that("unnest_tokens raises an error if there is a list column present", {
   d <- data_frame(a = c("hello world", "goodbye world"), b = list(1:2, 3:4))
   expect_error(unnest_tokens(d, word, a), "atomic vectors")
@@ -212,35 +224,37 @@ test_that("unnest_tokens keeps top-level attributes", {
 })
 
 
-if (suppressPackageStartupMessages(require("data.table", quietly = TRUE))) {
-  test_that("Trying to tokenize a data.table works", {
-    text <- data.table(txt = "Write till my fingers look like a bouquet of roses",
-                       author = "Watsky")
-    output <- unnest_tokens(text, word, txt)
-    expect_equal(ncol(output), 2)
-    expect_equal(nrow(output), 10)
-    expect_equal(output$word[1], "write")
-    expect_equal(output$author[1], "Watsky")
-  })
+test_that("Trying to tokenize a data.table works", {
+  skip_if_not_installed("data.table")
+  text <- data.table::data.table(txt = "Write till my fingers look like a bouquet of roses",
+                     author = "Watsky")
+  output <- unnest_tokens(text, word, txt)
+  expect_equal(ncol(output), 2)
+  expect_equal(nrow(output), 10)
+  expect_equal(output$word[1], "write")
+  expect_equal(output$author[1], "Watsky")
+})
 
-  test_that("Trying to tokenize a data.table work when the input has only one column", {
-    text <- data.table(txt = "You gotta bring yourself your flowers now in showbiz")
-    output <- unnest_tokens(text, word, txt)
-    expect_equal(ncol(output), 1)
-    expect_equal(nrow(output), 9)
-    expect_equal(output$word[1], "you")
-  })
+test_that("Trying to tokenize a data.table work when the input has only one column", {
+  skip_if_not_installed("data.table")
+  text <- data.table::data.table(txt = "You gotta bring yourself your flowers now in showbiz")
+  output <- unnest_tokens(text, word, txt)
+  expect_equal(ncol(output), 1)
+  expect_equal(nrow(output), 9)
+  expect_equal(output$word[1], "you")
+})
 
-  test_that("custom attributes are preserved for a data.table", {
-    text <- data.table(txt = "You gotta bring yourself your flowers now in showbiz")
-    attr(text, "testattr") <- list(1, 2, 3, 4)
+test_that("custom attributes are preserved for a data.table", {
+  skip_if_not_installed("data.table")
+  text <- data.table::data.table(txt = "You gotta bring yourself your flowers now in showbiz")
+  attr(text, "testattr") <- list(1, 2, 3, 4)
 
-    output <- unnest_tokens(text, word, txt)
+  output <- unnest_tokens(text, word, txt)
 
-    expect_equal(ncol(output), 1)
-    expect_equal(nrow(output), 9)
-    expect_equal(output$word[1], "you")
-    expect_equal(attr(output, "testattr"), list(1, 2, 3, 4))
-  })
-}
+  expect_equal(ncol(output), 1)
+  expect_equal(nrow(output), 9)
+  expect_equal(output$word[1], "you")
+  expect_equal(attr(output, "testattr"), list(1, 2, 3, 4))
+})
+
 

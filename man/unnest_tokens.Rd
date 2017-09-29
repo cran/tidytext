@@ -2,23 +2,21 @@
 % Please edit documentation in R/unnest_tokens.R
 \name{unnest_tokens}
 \alias{unnest_tokens}
-\alias{unnest_tokens_}
 \title{Split a column into tokens using the tokenizers package}
 \usage{
 unnest_tokens(tbl, output, input, token = "words", format = c("text", "man",
   "latex", "html", "xml"), to_lower = TRUE, drop = TRUE, collapse = NULL,
   ...)
-
-unnest_tokens_(tbl, output, input, token = "words", format = c("text",
-  "man", "latex", "html", "xml"), to_lower = TRUE, drop = TRUE,
-  collapse = NULL, ...)
 }
 \arguments{
-\item{tbl}{Data frame}
+\item{tbl}{A data frame}
 
-\item{output}{Output column to be created as bare name.}
+\item{output}{Output column to be created as string or symbol.}
 
-\item{input}{Input column that gets split as bare name.}
+\item{input}{Input column that gets split as string or symbol.
+
+  The output/input arguments are passed by expression and support
+  \link[rlang]{quasiquotation}; you can unquote strings and symbols.}
 
 \item{token}{Unit for tokenizing, or a custom tokenizing function. Built-in
 options are "words" (default), "characters", "ngrams", "skip_ngrams",
@@ -43,7 +41,8 @@ when token method is "ngrams", "skip_ngrams", "sentences", "lines",
 }
 \description{
 Split a column into tokens using the tokenizers package, splitting the table
-into one-token-per-row. \code{unnest_tokens_} is the standard evaluation version.
+into one-token-per-row. This function supports non-standard evaluation through
+the tidyeval framework.
 }
 \details{
 If the unit for tokenizing is ngrams, skip_ngrams, sentences, lines,
@@ -83,7 +82,7 @@ d \%>\%
 
 # tokenize HTML
 h <- data_frame(row = 1:2,
-                text = c("<h1>Text <b>is<b>", "<a href='example.com'>here</a>"))
+                text = c("<h1>Text <b>is</b>", "<a href='example.com'>here</a>"))
 
 h \%>\%
   unnest_tokens(word, text, format = "html")
