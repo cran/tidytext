@@ -15,7 +15,7 @@
 \method{glance}{STM}(x, ...)
 }
 \arguments{
-\item{x}{An STM fitted model object, created by \code{\link[stm]{stm}}.}
+\item{x}{An STM fitted model object from the stm package.}
 
 \item{matrix}{Whether to tidy the beta (per-term-per-topic, default)
 or gamma/theta (per-document-per-topic) matrix. The stm package calls this
@@ -29,14 +29,14 @@ per-document-per-topic tidying}
 \item{...}{Extra arguments, not used}
 
 \item{data}{For \code{augment}, the data given to the stm function, either
-as a \code{\link[quanteda]{dfm}} or as a tidied table with "document" and
+as a \code{dfm} from quanteda or as a tidied table with "document" and
 "term" columns}
 }
 \value{
 \code{tidy} returns a tidied version of either the beta or gamma matrix.
 
 \code{augment} must be provided a data argument, either a
-\code{\link[quanteda]{dfm}} or a table containing one row per original
+\code{dfm} from quanteda or a table containing one row per original
 document-term pair, such as is returned by \link{tdm_tidiers}, containing
 columns \code{document} and \code{term}. It returns that same data as a table
 with an additional column \code{.topic} with the topic assignment for that
@@ -59,20 +59,24 @@ are similar to \code{\link{lda_tidiers}}.
 \examples{
 
 \dontrun{
-if (requireNamespace("stm", quietly = TRUE) && requireNamespace("quanteda", quietly = TRUE)) {
+if (requireNamespace("stm", quietly = TRUE)) {
   library(dplyr)
   library(ggplot2)
   library(stm)
-  library(quanteda)
+  library(janeaustenr)
 
-  inaug <- dfm(data_corpus_inaugural, remove = stopwords("english"), remove_punct = TRUE)
-  topic_model <- stm(inaug, K = 3, verbose = FALSE, init.type = "Spectral")
+  austen_sparse <- austen_books() \%>\%
+    unnest_tokens(word, text) \%>\%
+    anti_join(stop_words) \%>\%
+    count(book, word) \%>\%
+    cast_sparse(book, word, n)
+  topic_model <- stm(austen_sparse, K = 12, verbose = FALSE, init.type = "Spectral")
 
   # tidy the word-topic combinations
   td_beta <- tidy(topic_model)
   td_beta
 
-  # Examine the three topics
+  # Examine the topics
   td_beta \%>\%
     group_by(topic) \%>\%
     top_n(10, beta) \%>\%
@@ -84,18 +88,15 @@ if (requireNamespace("stm", quietly = TRUE) && requireNamespace("quanteda", quie
 
   # tidy the document-topic combinations, with optional document names
   td_gamma <- tidy(topic_model, matrix = "gamma",
-                   document_names = rownames(inaug))
+                   document_names = rownames(austen_sparse))
   td_gamma
 
-  # find the assignments of each word in each document
-  assignments <- augment(topic_model, inaug)
-  assignments
 }
 }
 
 }
 \seealso{
-\code{\link{lda_tidiers}}, \code{\link[stm]{stm}}
+\code{\link{lda_tidiers}}
 
 If \code{matrix == "beta"} (default), returns a table with one row per topic and term,
 with columns
