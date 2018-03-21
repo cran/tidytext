@@ -12,6 +12,23 @@ test_that("tokenizing by character works", {
   expect_equal(d$char[1], "e")
 })
 
+test_that("tokenizing by character shingles works", {
+  d <- data_frame(txt = "tidytext is the best")
+  d <- d %>% unnest_tokens(char_ngram, txt, token = "character_shingles", n = 4)
+  expect_equal(nrow(d), 14)
+  expect_equal(ncol(d), 1)
+  expect_equal(d$char_ngram[1], "tidy")
+})
+
+test_that("tokenizing by character shingles works with an option to include whitespaces and punctuation", {
+  d <- data_frame(txt = "tidytext is the best!")
+  d <- d %>% unnest_tokens(char_ngram, txt, token = "character_shingles",
+                           strip_non_alphanum = FALSE)
+  expect_equal(nrow(d), 19)
+  expect_equal(ncol(d), 1)
+  expect_equal(d$char_ngram[1], "tid")
+})
+
 test_that("tokenizing by word works", {
   d <- data_frame(txt = c("Because I could not stop for Death -",
                           "He kindly stopped for me -"))
@@ -66,8 +83,8 @@ test_that("tokenizing by ngram and skip ngram works", {
   d <- d2 %>% unnest_tokens(ngram, txt, token = "skip_ngrams", n = 4, k = 2)
   #expect_equal(nrow(d), 189) does not pass on appveyor
   expect_equal(ncol(d), 1)
-  expect_equal(d$ngram[1], "hope thing that the")
-  expect_equal(d$ngram[10], "the sings without and")
+  expect_equal(d$ngram[40], "hope thing that the")
+  expect_equal(d$ngram[400], "the sings without and")
 
 })
 
@@ -317,3 +334,4 @@ test_that("Can't tokenize with list columns with collapse = TRUE", {
   ret <- unnest_tokens(df, word, txt, token = "sentences", collapse = FALSE)
   expect_equal(nrow(ret), 2)
 })
+
