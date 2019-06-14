@@ -130,7 +130,7 @@ tidy_topicmodels <- function(x, matrix = c("beta", "gamma"), log = FALSE, ...) {
 #' data are included, combined based on the \code{document} and \code{term}
 #' columns.
 #'
-#' @importFrom broom augment
+#' @importFrom generics augment
 #'
 #' @export
 augment.LDA <- function(x, data, ...) {
@@ -179,7 +179,7 @@ augment_topicmodels <- function(x, data, ...) {
 #'
 #' @export
 glance.LDA <- function(x, ...) {
-  ret <- data_frame(iter = x@iter, terms = x@n)
+  ret <- tibble(iter = x@iter, terms = x@n)
 
   if (!is.null(x@alpha)) {
     ret$alpha <- x@alpha
@@ -191,9 +191,9 @@ glance.LDA <- function(x, ...) {
 #'
 #' @export
 glance.CTM <- function(x, ...) {
-  data_frame(iter = x@iter, terms = x@n)
+  tibble(iter = x@iter, terms = x@n)
 
 }
 
 #' @export
-broom::augment
+generics::augment

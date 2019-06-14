@@ -28,7 +28,9 @@ return a list of character vectors of the same length.}
 \item{format}{Either "text", "man", "latex", "html", or "xml". If not text,
 this uses the hunspell tokenizer, and can tokenize only by "word"}
 
-\item{to_lower}{Whether to turn column lowercase.}
+\item{to_lower}{Whether to convert tokens to lowercase. If tokens include
+URLS (such as with \code{token = "tweets"}), such converted URLs may no
+longer be correct.}
 
 \item{drop}{Whether original input column should get dropped. Ignored
 if the original input and new output column have the same name.}
@@ -62,7 +64,7 @@ This does not yet have support for tokenizing by any unit other than words.
 library(dplyr)
 library(janeaustenr)
 
-d <- data_frame(txt = prideprejudice)
+d <- tibble(txt = prideprejudice)
 d
 
 d \%>\%
@@ -85,7 +87,7 @@ d \%>\%
   unnest_tokens(word, txt, token = stringr::str_split, pattern = " ")
 
 # tokenize HTML
-h <- data_frame(row = 1:2,
+h <- tibble(row = 1:2,
                 text = c("<h1>Text <b>is</b>", "<a href='example.com'>here</a>"))
 
 h \%>\%

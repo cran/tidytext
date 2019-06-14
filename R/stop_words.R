@@ -19,7 +19,7 @@
 
 #' Get a tidy data frame of a single stopword lexicon
 #'
-#' Get a specific stop word lexicon via the \pkg{stopwords} packages's
+#' Get a specific stop word lexicon via the \pkg{stopwords} package's
 #' \link[stopwords]{stopwords} function, in a tidy format with one word per row.
 #'
 #' @param language The language of the stopword lexicon specified as a
@@ -45,7 +45,7 @@
 #' @export
 #'
 get_stopwords <- function(language = "en", source = "snowball") {
-  data_frame(
+  tibble(
     word = stopwords::stopwords(language = language, source = source),
     lexicon = source
   )

@@ -150,7 +150,7 @@ tidy.estimateEffect <- function(x, ...) {
 #' with an additional column \code{.topic} with the topic assignment for that
 #' document-term combination.
 #'
-#' @importFrom broom augment
+#' @importFrom generics augment
 #'
 #' @export
 augment.STM <- function(x, data, ...) {
@@ -179,7 +179,7 @@ augment.STM <- function(x, data, ...) {
   term_indices <- match(data$term, x$vocab)
   doc_indices <- match(data$document, rownames(mat))
 
-  products <- beta[term_indices, ] * theta[doc_indices, ]
+  products <- exp(beta[term_indices, ]) * theta[doc_indices, ]
   keep <- !is.na(term_indices) & !is.na(doc_indices)
 
   data$.topic <- NA
@@ -202,7 +202,7 @@ augment.STM <- function(x, data, ...) {
 #' @export
 
 glance.STM <- function(x, ...) {
-  ret <- data_frame(
+  ret <- tibble(
     k = as.integer(x$settings$dim$K),
     docs = x$settings$dim$N,
     terms = x$settings$dim$V,
@@ -214,4 +214,4 @@ glance.STM <- function(x, ...) {
 }
 
 #' @export
-broom::augment
+generics::augment

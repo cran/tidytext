@@ -63,7 +63,7 @@ tidy.Corpus <- function(x, collapse = "\n", ...) {
     ret
   })
 
-  ret <- as_data_frame(columns)
+  ret <- as_tibble(columns)
 
   # most importantly, add text
   text <- purrr::map(as.list(x), as.character)
@@ -91,7 +91,7 @@ tidy.Corpus <- function(x, collapse = "\n", ...) {
 #' @param x A Corpus object, such as a VCorpus or PCorpus
 #' @param ... Extra arguments, not used
 #'
-#' @importFrom broom glance
+#' @importFrom generics glance
 #'
 #' @details For the most part, the \code{tidy} output is equivalent to the
 #' "documents" data frame in the corpus object, except that it is converted
@@ -131,8 +131,8 @@ glance.corpus <- function(x, ...) {
   # turn vectors into list columns
   md <- purrr::map_if(md, ~ length(.) > 1, list)
 
-  as_data_frame(md)
+  as_tibble(md)
 }
 
 #' @export
-broom::glance
+generics::glance
