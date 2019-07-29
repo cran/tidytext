@@ -33,7 +33,7 @@
 #' package.
 #'
 #' @param lexicon The sentiment lexicon to retrieve;
-#' either "afinn", "bing", or "loughran"
+#' either "afinn", "bing", "nrc", or "loughran"
 #'
 #' @return A tbl_df with a \code{word} column, and either a \code{sentiment}
 #' column (if \code{lexicon} is not "afinn") or a numeric \code{score} column
@@ -45,22 +45,36 @@
 #'
 #' \dontrun{
 #' get_sentiments("afinn")
+#' get_sentiments("nrc")
 #' }
 #' get_sentiments("bing")
 #'
 #' @importFrom utils data
 #' @export
-get_sentiments <- function(lexicon = c("afinn", "bing", "loughran")) {
+get_sentiments <- function(lexicon = c("afinn", "bing", "loughran", "nrc")) {
   data(list = "sentiments", package = "tidytext", envir = environment())
   lex <- match.arg(lexicon)
 
   if (lex == "afinn") {
+    if (!requireNamespace("textdata", quietly = TRUE)){
+      stop("The textdata package is required to download the AFINN lexicon. \nInstall the textdata package to access this dataset.",
+        call. = FALSE
+      )
+    }
     return(textdata::lexicon_afinn())
   } else if (lex == "nrc") {
-    stop(paste("The NRC lexicon is no longer available within this package.\n",
-               "Learn more about this dataset here:\n",
-               "https://saifmohammad.com/WebPages/NRC-Emotion-Lexicon.htm"))
+    if (!requireNamespace("textdata", quietly = TRUE)){
+      stop("The textdata package is required to download the NRC word-emotion association lexicon. \nInstall the textdata package to access this dataset.",
+           call. = FALSE
+      )
+    }
+    return(textdata::lexicon_nrc())
   } else if (lex == "loughran") {
+    if (!requireNamespace("textdata", quietly = TRUE)){
+      stop("The textdata package is required to download the Loughran-McDonald lexicon. \nInstall the textdata package to access this dataset.",
+           call. = FALSE
+      )
+    }
     return(textdata::lexicon_loughran())
   } else if (lex == "bing") {
     return(sentiments)
