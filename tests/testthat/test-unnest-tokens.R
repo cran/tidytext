@@ -134,7 +134,7 @@ test_that("tokenizing with standard evaluation works", {
     "Because I could not stop for Death -",
     "He kindly stopped for me -"
   ))
-  d <- d %>% unnest_tokens_("word", "txt")
+  d <- d %>% unnest_tokens("word", "txt")
   expect_equal(nrow(d), 12)
   expect_equal(ncol(d), 1)
   expect_equal(d$word[1], "because")
@@ -177,11 +177,13 @@ test_that("unnest_tokens raises an error if custom tokenizer gives bad output", 
 
   expect_error(
     unnest_tokens(d, word, txt, token = function(e) c("a", "b")),
-    "to be a list"
+    "to be a list",
+    class = "rlang_error"
   )
   expect_error(
     unnest_tokens(d, word, txt, token = function(e) list("a", "b")),
-    "of length"
+    "of length",
+    class = "rlang_error"
   )
 })
 
