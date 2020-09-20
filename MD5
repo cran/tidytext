@@ -1,7 +1,7 @@
-7dc474477974f4061e18bd9686e532cf *DESCRIPTION
+afdf568e939fe841f2498345bc046255 *DESCRIPTION
 60be9711aa00f169af385937d886c2d4 *LICENSE
 542a984a7ff440b2d0925863b80256a6 *NAMESPACE
-c432d16cb60446e26c87f209a91c0b21 *NEWS.md
+8a7c7d952f869847e454a5e15bfab7ac *NEWS.md
 df1002122987f134616e7724720057b5 *R/bind_tf_idf.R
 fe2b083cb49e6a80aedf7695b7b0ba07 *R/compat_lazyeval.R
 cf7661f6737fc40f7d38ed65687a7841 *R/corpus_tidiers.R
@@ -17,7 +17,7 @@ bb4b45edaf0344283b2f6a39941dd7ca *R/sentiments.R
 ab02bdc8f457bf215dec5f8dea6efedf *R/sparse_casters.R
 23cb69bdb6cdb4ba4d740bf9a3218b4c *R/sparse_tidiers.R
 42ed288605d7446421c857c96da617a8 *R/stm_tidiers.R
-463215513107d769ee57abb6822158fa *R/stop_words.R
+731ada3114d3432b21a56fee43c1182f *R/stop_words.R
 d1da704d2fbf310cfb04ee43f8976d32 *R/tidytext.R
 bb807a55a642237279f2df950eb587c6 *R/unnest_char.R
 36a6499af460d893b24884544fe85859 *R/unnest_ngrams.R
@@ -26,8 +26,8 @@ b360babb83969da49d66ca29679421f4 *R/unnest_regex.R
 200934bff708da9c4283492a063c43a9 *R/unnest_sentence.R
 112803aec79364ac95555b6a2ad5ee01 *R/unnest_tokens.R
 49d1d2ee8e546934199c73e07a900490 *R/unnest_tweets.R
-4aa1b94a0319e8a2c45ae30ef56be757 *README.md
-a97f17066bb19b2130c6649e4121f540 *build/vignette.rds
+e1a4c53366c64d01d235ba2cf51de6d9 *README.md
+d3102aac93aeb59cd397f33fe223ffcf *build/vignette.rds
 dffbb0fe70f8b13246e7a5ca78c17780 *data/nma_words.rda
 f30278ae776165a5ef03124f7fa2323e *data/parts_of_speech.rda
 01b0bbb85f2aed8ea8c7b7d9c091ef3d *data/sentiments.rda
@@ -35,16 +35,13 @@ fb19b7e42bcbff432db19d6f1ba11426 *data/stop_words.rda
 33f63d59a42106e6a7e32ec946ebb92a *inst/CITATION
 3f17e08d8c10dca9684a8ba708089f70 *inst/doc/tf_idf.R
 9d697f8a00519d8e26d3ae595fa1d679 *inst/doc/tf_idf.Rmd
-47e9345a2195a7b41068963ddfd85236 *inst/doc/tf_idf.html
+f3f4f40fa7074220b12dcc7249fe7852 *inst/doc/tf_idf.html
 8b48c4b20388a421a843b78a0da7d595 *inst/doc/tidying_casting.R
 056dccc56b25dfa150e9967d226d4c44 *inst/doc/tidying_casting.Rmd
-5defd82b5500c021b9bb8b6d36e90d89 *inst/doc/tidying_casting.html
+e93f8d188e4d8f4545c1016dbb98159f *inst/doc/tidying_casting.html
 3b0ec73a1cce991259a284141752ff89 *inst/doc/tidytext.R
-048d9aeda3c9880448cd67ee9e4585f3 *inst/doc/tidytext.Rmd
-3e28854745183dac01e2cf73ddf82bee *inst/doc/tidytext.html
-1f71c65b0d46691caf6db69b14ce7afd *inst/doc/topic_modeling.R
-6cc8053e6061a630ab03c74053710fbd *inst/doc/topic_modeling.Rmd
-0ae5cba7a73c924f8760864dbffc45d6 *inst/doc/topic_modeling.html
+ed1741080446e991357d7db3e46f3e72 *inst/doc/tidytext.Rmd
+85dc550de83724ac83b7a8e27a9e8919 *inst/doc/tidytext.html
 9321a877f1adad7b317b01c13a055885 *inst/extdata/books.rda
 27b10371f719f49f9a9d39313d87a740 *man/bind_tf_idf.Rd
 7abd84d1268ca1b9ee34a77c409bfec9 *man/cast_sparse.Rd
@@ -66,7 +63,7 @@ d257672b36790f46d9f0ca7d1af74965 *man/reexports.Rd
 54b7233093297fdc5c45b3980d188df3 *man/reorder_within.Rd
 94e52c0200accdb3e393a473e8aafe91 *man/sentiments.Rd
 df152eaeecb2731a83cff324d72a204e *man/stm_tidiers.Rd
-9200056531dcd70aa290e7c02e75888f *man/stop_words.Rd
+e3b28f2b572a8f8d68f6d520d05ba4f1 *man/stop_words.Rd
 a6137ec5cc62317c5672da2772db29eb *man/tdm_tidiers.Rd
 edc2dac25cd3b19cb1cf95f9c191967d *man/tidy.Corpus.Rd
 752c94c4e9dc1fa5c81e6aabf978c880 *man/tidy_triplet.Rd
@@ -105,5 +102,4 @@ d286cb85fbaedc9d40dd4ed8ca9c92b3 *tools/README-unnamed-chunk-13-1.png
 4609d1cbcdf21b226da16fa22083929e *tools/tidytext.png
 9d697f8a00519d8e26d3ae595fa1d679 *vignettes/tf_idf.Rmd
 056dccc56b25dfa150e9967d226d4c44 *vignettes/tidying_casting.Rmd
-048d9aeda3c9880448cd67ee9e4585f3 *vignettes/tidytext.Rmd
-6cc8053e6061a630ab03c74053710fbd *vignettes/topic_modeling.Rmd
+ed1741080446e991357d7db3e46f3e72 *vignettes/tidytext.Rmd
