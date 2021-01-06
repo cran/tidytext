@@ -34,12 +34,19 @@ test_that("tokenizing by character shingles can include whitespace/punctuation",
 test_that("tokenizing by word works", {
   d <- tibble(txt = c(
     "Because I could not stop for Death -",
-    "He kindly stopped for me -"
-  ))
-  d <- d %>% unnest_tokens(word, txt)
-  expect_equal(nrow(d), 12)
-  expect_equal(ncol(d), 1)
-  expect_equal(d$word[1], "because")
+    "He kindly stopped for me -"),
+    line = 1:2)
+  d1 <- d %>% unnest_tokens(word, txt)
+  expect_equal(nrow(d1), 12)
+  expect_equal(ncol(d1), 2)
+  expect_equal(d1$word[1], "because")
+
+  d2 <- d %>% unnest_tokens(.data$word, .data$txt)
+  expect_equal(d1, d2)
+
+  d3 <- d %>% group_by(line) %>% unnest_tokens(word, txt)
+  expect_equal(d1, ungroup(d3))
+
 })
 
 test_that("tokenizing errors with appropriate message", {
@@ -76,7 +83,7 @@ test_that("tokenizing by sentence works", {
 
 
 test_that("tokenizing by ngram and skip ngram works", {
-  d2 <- tibble(txt = c(
+  d <- tibble(txt = c(
     "Hope is the thing with feathers",
     "That perches in the soul",
     "And sings the tune without the words",
@@ -88,22 +95,37 @@ test_that("tokenizing by ngram and skip ngram works", {
     "I’ve heard it in the chillest land ",
     "And on the strangest Sea ",
     "Yet never in Extremity,",
-    "It asked a crumb of me."
-  ))
+    "It asked a crumb of me."),
+    line = c(rep(1, 6), rep(2, 6))
+  )
 
   # tokenize by ngram
-  d <- d2 %>% unnest_tokens(ngram, txt, token = "ngrams", n = 2)
+  d1 <- d %>% unnest_tokens(ngram, txt, token = "ngrams", n = 2)
   # expect_equal(nrow(d), 68) does not pass on appveyor
-  expect_equal(ncol(d), 1)
-  expect_equal(d$ngram[1], "hope is")
-  expect_equal(d$ngram[10], "the soul")
+  expect_equal(ncol(d1), 2)
+  expect_equal(d1$ngram[1], "hope is")
+  expect_equal(d1$ngram[10], "and sings")
+
+  d2 <- d %>% unnest_tokens(ngram, txt, token = "ngrams", n = 2, collapse = "line")
+  d3 <- d %>% group_by(line) %>% unnest_tokens(ngram, txt, token = "ngrams", n = 2)
+  expect_equal(d2, ungroup(d3))
+  expect_equal(ncol(d2), 2)
+  expect_equal(d2$ngram[4], "thing with")
+  expect_equal(d2$ngram[40], "little bird")
+
+  expect_error(
+    d %>%
+      group_by(line) %>%
+      unnest_tokens(ngram, txt, token = "ngrams", n = 2, collapse = "line"),
+    "Use the `collapse` argument"
+  )
 
   # tokenize by skip_ngram
-  d <- d2 %>% unnest_tokens(ngram, txt, token = "skip_ngrams", n = 4, k = 2)
+  d2 <- d %>% unnest_tokens(ngram, txt, token = "skip_ngrams", n = 4, k = 2)
   # expect_equal(nrow(d), 189) does not pass on appveyor
-  expect_equal(ncol(d), 1)
-  expect_equal(d$ngram[40], "hope thing that the")
-  expect_equal(d$ngram[400], "the sings without and")
+  expect_equal(ncol(d2), 2)
+  expect_equal(d2$ngram[30], "is thing with")
+  expect_equal(d2$ngram[300], "sore must storm")
 })
 
 test_that("tokenizing with a custom function works", {
@@ -112,7 +134,7 @@ test_that("tokenizing with a custom function works", {
     "Are you - Nobody - too?",
     "Then there’s a pair of us!",
     "Don’t tell! they’d advertise - you know!"
-  ))
+  ), group = "all")
   d <- orig %>%
     unnest_tokens(unit, txt, token = stringr::str_split, pattern = " - ")
   expect_equal(nrow(d), 7)
@@ -120,9 +142,10 @@ test_that("tokenizing with a custom function works", {
   expect_equal(d$unit[4], "too?")
 
   d2 <- orig %>%
-    unnest_tokens(unit, txt,
-                  token = stringr::str_split,
-                  pattern = " - ", collapse = TRUE
+    unnest_tokens(
+      unit, txt,
+      token = stringr::str_split,
+      pattern = " - ", collapse = "group"
     )
   expect_equal(nrow(d2), 4)
   expect_equal(d2$unit[2], "nobody")
@@ -145,8 +168,8 @@ test_that("tokenizing with tidyeval works", {
     "Because I could not stop for Death -",
     "He kindly stopped for me -"
   ))
-  outputvar <- quo("word")
-  inputvar <- quo("txt")
+  outputvar <- quo(word)
+  inputvar <- quo(txt)
   d <- d %>% unnest_tokens(!!outputvar, !!inputvar)
   expect_equal(nrow(d), 12)
   expect_equal(ncol(d), 1)
@@ -166,7 +189,7 @@ test_that("tokenizing with to_lower = FALSE works", {
                                token = "ngrams",
                                n = 2, to_lower = FALSE
   )
-  expect_equal(nrow(d2), 11)
+  expect_equal(nrow(d2), 10)
   expect_equal(ncol(d2), 1)
   expect_equal(d2$ngram[1], "Because I")
 })
@@ -401,12 +424,12 @@ test_that("Can't tokenize with list columns with collapse = TRUE", {
   )
 
   expect_error(
-    unnest_tokens(df, word, txt, token = "sentences"),
+    unnest_tokens(df, word, txt, token = "sentences", collapse = "line"),
     "to be atomic vectors"
   )
 
   # Can tokenize by sentence without collapsing
   # though it sort of defeats the purpose
-  ret <- unnest_tokens(df, word, txt, token = "sentences", collapse = FALSE)
+  ret <- unnest_tokens(df, word, txt, token = "sentences", collapse = NULL)
   expect_equal(nrow(ret), 2)
 })
