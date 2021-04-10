@@ -22,7 +22,7 @@ test_that("Can tidy corpus from quanteda package", {
   skip_if_not_installed("quanteda")
   data("data_corpus_inaugural", package = "quanteda")
 
-  texts <- quanteda::texts(data_corpus_inaugural)
+  texts <- as.character(data_corpus_inaugural)
 
   td <- tidy(data_corpus_inaugural)
 
@@ -36,7 +36,7 @@ test_that("Can tidy corpus from quanteda using accessor functions", {
 
   ## similar to old method
   ret_old <- as_tibble(quanteda::docvars(x)) %>%
-    mutate(text = unname(quanteda::texts(x))) %>%
+    mutate(text = unname(as.character(x))) %>%
     select(text, everything())
 
   ## new method
@@ -51,7 +51,7 @@ test_that("Can glance a corpus from quanteda using accessor functions", {
 
   ## old method
   glance_old <- function(x, ...) {
-    md <- purrr::compact(quanteda::metacorpus(x))
+    md <- purrr::compact(quanteda::meta(x))
     # turn vectors into list columns
     md <- purrr::map_if(md, ~ length(.) > 1, list)
     as_tibble(md)
