@@ -154,10 +154,10 @@ unnest_tokens <- function(tbl, output, input, token = "words",
   output_lst <- tokenfunc(col, ...)
 
   if (!(is.list(output_lst) && length(output_lst) == nrow(tbl))) {
-    rlang::abort(
-      "Expected output of tokenizing function to be a list of length ",
+    rlang::abort(sprintf(
+      "Expected output of tokenizing function to be a list of length %d",
       nrow(tbl)
-    )
+    ))
   }
 
   output <- quo_name(output)

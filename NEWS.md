@@ -1,3 +1,7 @@
+# tidytext 0.3.2
+
+* Update testing for rlang change + testthat 3e
+
 # tidytext 0.3.1
 
 * Check for installation of stopwords more gracefully
