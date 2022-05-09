@@ -9,13 +9,12 @@ Robinson](http://varianceexplained.org/)<br/> **License:**
 
 <!-- badges: start -->
 
-[![R build
-status](https://github.com/juliasilge/tidytext/workflows/R-CMD-check/badge.svg)](https://github.com/juliasilge/tidytext/actions)
-[![CRAN\_Status\_Badge](https://www.r-pkg.org/badges/version/tidytext)](https://cran.r-project.org/package=tidytext)
+[![R-CMD-check](https://github.com/juliasilge/tidytext/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/juliasilge/tidytext/actions/workflows/R-CMD-check.yaml)
+[![CRAN_Status_Badge](https://www.r-pkg.org/badges/version/tidytext)](https://cran.r-project.org/package=tidytext)
 [![cran
 checks](https://cranchecks.info/badges/summary/tidytext)](https://cran.r-project.org/web/checks/check_results_tidytext.html)
-[![Coverage
-Status](https://img.shields.io/codecov/c/github/juliasilge/tidytext/master.svg)](https://codecov.io/github/juliasilge/tidytext?branch=master)
+[![Codecov test
+coverage](https://codecov.io/gh/juliasilge/tidytext/branch/main/graph/badge.svg)](https://app.codecov.io/gh/juliasilge/tidytext?branch=main)
 [![DOI](https://zenodo.org/badge/22224/juliasilge/tidytext.svg)](https://zenodo.org/badge/latestdoi/22224/juliasilge/tidytext)
 [![JOSS](https://joss.theoj.org/papers/10.21105/joss.00037/status.svg)](https://joss.theoj.org/papers/10.21105/joss.00037)
 [![Downloads](https://cranlogs.r-pkg.org/badges/tidytext)](https://CRAN.R-project.org/package=tidytext)
@@ -23,11 +22,10 @@ Status](https://img.shields.io/codecov/c/github/juliasilge/tidytext/master.svg)]
 Downloads](https://cranlogs.r-pkg.org/badges/grand-total/tidytext?color=orange)](https://CRAN.R-project.org/package=tidytext)
 <!-- badges: end -->
 
-Using [tidy data
-principles](https://www.jstatsoft.org/article/view/v059i10) can make
-many text mining tasks easier, more effective, and consistent with tools
-already in wide use. Much of the infrastructure needed for text mining
-with tidy data frames already exists in packages like
+Using [tidy data principles](https://doi.org/10.18637/jss.v059.i10) can
+make many text mining tasks easier, more effective, and consistent with
+tools already in wide use. Much of the infrastructure needed for text
+mining with tidy data frames already exists in packages like
 [dplyr](https://cran.r-project.org/package=dplyr),
 [broom](https://cran.r-project.org/package=broom),
 [tidyr](https://cran.r-project.org/package=tidyr), and
@@ -72,7 +70,7 @@ original_books <- austen_books() %>%
   ungroup()
 
 original_books
-#> # A tibble: 73,422 x 3
+#> # A tibble: 73,422 × 3
 #>    text                    book                 line
 #>    <chr>                   <fct>               <int>
 #>  1 "SENSE AND SENSIBILITY" Sense & Sensibility     1
@@ -98,7 +96,7 @@ tidy_books <- original_books %>%
   unnest_tokens(word, text)
 
 tidy_books
-#> # A tibble: 725,055 x 3
+#> # A tibble: 725,055 × 3
 #>    book                 line word       
 #>    <fct>               <int> <chr>      
 #>  1 Sense & Sensibility     1 sense      
@@ -135,7 +133,7 @@ as a whole.
 ``` r
 tidy_books %>%
   count(word, sort = TRUE) 
-#> # A tibble: 14,375 x 2
+#> # A tibble: 14,375 × 2
 #>    word      n
 #>    <chr> <int>
 #>  1 mr     3015
@@ -160,7 +158,7 @@ positive and negative words in defined sections of each novel.
 ``` r
 library(tidyr)
 get_sentiments("bing")
-#> # A tibble: 6,786 x 2
+#> # A tibble: 6,786 × 2
 #>    word        sentiment
 #>    <chr>       <chr>    
 #>  1 2-faces     negative 
@@ -182,7 +180,7 @@ janeaustensentiment <- tidy_books %>%
   mutate(sentiment = positive - negative)
 
 janeaustensentiment
-#> # A tibble: 920 x 5
+#> # A tibble: 920 × 5
 #>    book                index negative positive sentiment
 #>    <fct>               <dbl>    <dbl>    <dbl>     <dbl>
 #>  1 Sense & Sensibility     0       16       32        16
@@ -239,7 +237,7 @@ package](https://broom.tidymodels.org/)).
 
 ``` r
 tidy(AssociatedPress)
-#> # A tibble: 302,031 x 3
+#> # A tibble: 302,031 × 3
 #>    document term       count
 #>       <int> <chr>      <dbl>
 #>  1        1 adding         1
@@ -279,7 +277,7 @@ comparison <- tidy(AssociatedPress) %>%
          Austen = Austen / sum(Austen))
 
 comparison
-#> # A tibble: 4,730 x 3
+#> # A tibble: 4,730 × 3
 #>    word             AP     Austen
 #>    <chr>         <dbl>      <dbl>
 #>  1 abandoned 0.000170  0.00000493
@@ -307,13 +305,14 @@ ggplot(comparison, aes(AP, Austen)) +
 <img src="man/figures/README-unnamed-chunk-13-1.png" width="100%" />
 
 For more examples of working with objects from other text mining
-packages using tidy data principles, see the vignette on converting to
-and from document term matrices.
+packages using tidy data principles, see the
+[vignette](https://juliasilge.github.io/tidytext/articles/tidying_casting.html)
+on converting to and from document term matrices.
 
 ### Community Guidelines
 
 This project is released with a [Contributor Code of
-Conduct](https://github.com/juliasilge/tidytext/blob/master/CONDUCT.md).
+Conduct](https://github.com/juliasilge/tidytext/blob/main/CONDUCT.md).
 By participating in this project you agree to abide by its terms.
 Feedback, bug reports (and fixes!), and feature requests are welcome;
 file issues or seek support

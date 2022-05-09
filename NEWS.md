@@ -1,3 +1,9 @@
+# tidytext 0.3.3
+
+* `scale_x/y_reordered()` now uses a function `labels` as its main input (#200)
+* Fixed how `to_lower` is passed to underlying tokenization function for character shingles (#208)
+* Added support for tidying STM models that use `content`, thanks to @jonathanvoelkle (#209)
+
 # tidytext 0.3.2
 
 * Update testing for rlang change + testthat 3e
