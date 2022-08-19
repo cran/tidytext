@@ -1,3 +1,7 @@
+# tidytext 0.3.4
+
+* Updated the tidy method for a quanteda `dfm` because of the upcoming release of Matrix (#218)
+
 # tidytext 0.3.3
 
 * `scale_x/y_reordered()` now uses a function `labels` as its main input (#200)

@@ -12,7 +12,7 @@
 
 <meta name="author" content="Julia Silge and David Robinson" />
 
-<meta name="date" content="2022-05-09" />
+<meta name="date" content="2022-08-19" />
 
 <title>Converting to and from Document-Term Matrix and Corpus objects</title>
 
@@ -122,13 +122,20 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   for (var i = 0; i < sheets.length; i++) {
     if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
     try { var rules = sheets[i].cssRules; } catch (e) { continue; }
-    for (var j = 0; j < rules.length; j++) {
+    var j = 0;
+    while (j < rules.length) {
       var rule = rules[j];
       // check if there is a div.sourceCode rule
-      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
       var style = rule.style.cssText;
       // check if color or background-color is set
-      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
       // replace div.sourceCode by a pre.sourceCode rule
       sheets[i].deleteRule(j);
       sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
@@ -335,7 +342,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <h1 class="title toc-ignore">Converting to and from Document-Term Matrix
 and Corpus objects</h1>
 <h4 class="author">Julia Silge and David Robinson</h4>
-<h4 class="date">2022-05-09</h4>
+<h4 class="date">2022-08-19</h4>
 
 
 
@@ -539,31 +546,32 @@ document:</p>
 <div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>reuters_td <span class="ot">&lt;-</span> <span class="fu">tidy</span>(reuters)</span>
 <span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>reuters_td</span></code></pre></div>
 <pre><code>## # A tibble: 20 × 17
-##    author   datetimestamp       description heading id    language origin topics
-##    &lt;chr&gt;    &lt;dttm&gt;              &lt;chr&gt;       &lt;chr&gt;   &lt;chr&gt; &lt;chr&gt;    &lt;chr&gt;  &lt;chr&gt; 
-##  1 &lt;NA&gt;     1987-02-26 17:00:56 &quot;&quot;          DIAMON… 127   en       Reute… YES   
-##  2 BY TED … 1987-02-26 17:34:11 &quot;&quot;          OPEC M… 144   en       Reute… YES   
-##  3 &lt;NA&gt;     1987-02-26 18:18:00 &quot;&quot;          TEXACO… 191   en       Reute… YES   
-##  4 &lt;NA&gt;     1987-02-26 18:21:01 &quot;&quot;          MARATH… 194   en       Reute… YES   
-##  5 &lt;NA&gt;     1987-02-26 19:00:57 &quot;&quot;          HOUSTO… 211   en       Reute… YES   
-##  6 &lt;NA&gt;     1987-03-01 03:25:46 &quot;&quot;          KUWAIT… 236   en       Reute… YES   
-##  7 By Jere… 1987-03-01 03:39:14 &quot;&quot;          INDONE… 237   en       Reute… YES   
-##  8 &lt;NA&gt;     1987-03-01 05:27:27 &quot;&quot;          SAUDI … 242   en       Reute… YES   
-##  9 &lt;NA&gt;     1987-03-01 08:22:30 &quot;&quot;          QATAR … 246   en       Reute… YES   
-## 10 &lt;NA&gt;     1987-03-01 18:31:44 &quot;&quot;          SAUDI … 248   en       Reute… YES   
-## 11 &lt;NA&gt;     1987-03-02 01:05:49 &quot;&quot;          SAUDI … 273   en       Reute… YES   
-## 12 &lt;NA&gt;     1987-03-02 07:39:23 &quot;&quot;          GULF A… 349   en       Reute… YES   
-## 13 &lt;NA&gt;     1987-03-02 07:43:22 &quot;&quot;          SAUDI … 352   en       Reute… YES   
-## 14 &lt;NA&gt;     1987-03-02 07:43:41 &quot;&quot;          KUWAIT… 353   en       Reute… YES   
-## 15 &lt;NA&gt;     1987-03-02 08:25:42 &quot;&quot;          PHILAD… 368   en       Reute… YES   
-## 16 &lt;NA&gt;     1987-03-02 11:20:05 &quot;&quot;          STUDY … 489   en       Reute… YES   
-## 17 &lt;NA&gt;     1987-03-02 11:28:26 &quot;&quot;          STUDY … 502   en       Reute… YES   
-## 18 &lt;NA&gt;     1987-03-02 12:13:46 &quot;&quot;          UNOCAL… 543   en       Reute… YES   
-## 19 By BERN… 1987-03-02 14:38:34 &quot;&quot;          NYMEX … 704   en       Reute… YES   
-## 20 &lt;NA&gt;     1987-03-02 14:49:06 &quot;&quot;          ARGENT… 708   en       Reute… YES   
+##    author        datetimestamp       descr…¹ heading id    langu…² origin topics
+##    &lt;chr&gt;         &lt;dttm&gt;              &lt;chr&gt;   &lt;chr&gt;   &lt;chr&gt; &lt;chr&gt;   &lt;chr&gt;  &lt;chr&gt; 
+##  1 &lt;NA&gt;          1987-02-26 17:00:56 &quot;&quot;      DIAMON… 127   en      Reute… YES   
+##  2 BY TED D&#39;AFF… 1987-02-26 17:34:11 &quot;&quot;      OPEC M… 144   en      Reute… YES   
+##  3 &lt;NA&gt;          1987-02-26 18:18:00 &quot;&quot;      TEXACO… 191   en      Reute… YES   
+##  4 &lt;NA&gt;          1987-02-26 18:21:01 &quot;&quot;      MARATH… 194   en      Reute… YES   
+##  5 &lt;NA&gt;          1987-02-26 19:00:57 &quot;&quot;      HOUSTO… 211   en      Reute… YES   
+##  6 &lt;NA&gt;          1987-03-01 03:25:46 &quot;&quot;      KUWAIT… 236   en      Reute… YES   
+##  7 By Jeremy Cl… 1987-03-01 03:39:14 &quot;&quot;      INDONE… 237   en      Reute… YES   
+##  8 &lt;NA&gt;          1987-03-01 05:27:27 &quot;&quot;      SAUDI … 242   en      Reute… YES   
+##  9 &lt;NA&gt;          1987-03-01 08:22:30 &quot;&quot;      QATAR … 246   en      Reute… YES   
+## 10 &lt;NA&gt;          1987-03-01 18:31:44 &quot;&quot;      SAUDI … 248   en      Reute… YES   
+## 11 &lt;NA&gt;          1987-03-02 01:05:49 &quot;&quot;      SAUDI … 273   en      Reute… YES   
+## 12 &lt;NA&gt;          1987-03-02 07:39:23 &quot;&quot;      GULF A… 349   en      Reute… YES   
+## 13 &lt;NA&gt;          1987-03-02 07:43:22 &quot;&quot;      SAUDI … 352   en      Reute… YES   
+## 14 &lt;NA&gt;          1987-03-02 07:43:41 &quot;&quot;      KUWAIT… 353   en      Reute… YES   
+## 15 &lt;NA&gt;          1987-03-02 08:25:42 &quot;&quot;      PHILAD… 368   en      Reute… YES   
+## 16 &lt;NA&gt;          1987-03-02 11:20:05 &quot;&quot;      STUDY … 489   en      Reute… YES   
+## 17 &lt;NA&gt;          1987-03-02 11:28:26 &quot;&quot;      STUDY … 502   en      Reute… YES   
+## 18 &lt;NA&gt;          1987-03-02 12:13:46 &quot;&quot;      UNOCAL… 543   en      Reute… YES   
+## 19 By BERNICE N… 1987-03-02 14:38:34 &quot;&quot;      NYMEX … 704   en      Reute… YES   
+## 20 &lt;NA&gt;          1987-03-02 14:49:06 &quot;&quot;      ARGENT… 708   en      Reute… YES   
 ## # … with 9 more variables: lewissplit &lt;chr&gt;, cgisplit &lt;chr&gt;, oldid &lt;chr&gt;,
 ## #   topics_cat &lt;named list&gt;, places &lt;named list&gt;, people &lt;chr&gt;, orgs &lt;chr&gt;,
-## #   exchanges &lt;chr&gt;, text &lt;chr&gt;</code></pre>
+## #   exchanges &lt;chr&gt;, text &lt;chr&gt;, and abbreviated variable names ¹​description,
+## #   ²​language</code></pre>
 <p>Similarly, you can <code>tidy</code> a <code>corpus</code> object
 from the quanteda package:</p>
 <div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(quanteda)</span>
@@ -594,19 +602,19 @@ from the quanteda package:</p>
 <div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>inaug_td <span class="ot">&lt;-</span> <span class="fu">tidy</span>(data_corpus_inaugural)</span>
 <span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>inaug_td</span></code></pre></div>
 <pre><code>## # A tibble: 59 × 5
-##    text                                           Year President FirstName Party
-##    &lt;chr&gt;                                         &lt;int&gt; &lt;chr&gt;     &lt;chr&gt;     &lt;fct&gt;
-##  1 &quot;Fellow-Citizens of the Senate and of the Ho…  1789 Washingt… George    none 
-##  2 &quot;Fellow citizens, I am again called upon by …  1793 Washingt… George    none 
-##  3 &quot;When it was first perceived, in early times…  1797 Adams     John      Fede…
-##  4 &quot;Friends and Fellow Citizens:\n\nCalled upon…  1801 Jefferson Thomas    Demo…
-##  5 &quot;Proceeding, fellow citizens, to that qualif…  1805 Jefferson Thomas    Demo…
-##  6 &quot;Unwilling to depart from examples of the mo…  1809 Madison   James     Demo…
-##  7 &quot;About to add the solemnity of an oath to th…  1813 Madison   James     Demo…
-##  8 &quot;I should be destitute of feeling if I was n…  1817 Monroe    James     Demo…
-##  9 &quot;Fellow citizens, I shall not attempt to des…  1821 Monroe    James     Demo…
-## 10 &quot;In compliance with an usage coeval with the…  1825 Adams     John Qui… Demo…
-## # … with 49 more rows</code></pre>
+##    text                                               Year Presi…¹ First…² Party
+##    &lt;chr&gt;                                             &lt;int&gt; &lt;chr&gt;   &lt;chr&gt;   &lt;fct&gt;
+##  1 &quot;Fellow-Citizens of the Senate and of the House …  1789 Washin… George  none 
+##  2 &quot;Fellow citizens, I am again called upon by the …  1793 Washin… George  none 
+##  3 &quot;When it was first perceived, in early times, th…  1797 Adams   John    Fede…
+##  4 &quot;Friends and Fellow Citizens:\n\nCalled upon to …  1801 Jeffer… Thomas  Demo…
+##  5 &quot;Proceeding, fellow citizens, to that qualificat…  1805 Jeffer… Thomas  Demo…
+##  6 &quot;Unwilling to depart from examples of the most r…  1809 Madison James   Demo…
+##  7 &quot;About to add the solemnity of an oath to the ob…  1813 Madison James   Demo…
+##  8 &quot;I should be destitute of feeling if I was not d…  1817 Monroe  James   Demo…
+##  9 &quot;Fellow citizens, I shall not attempt to describ…  1821 Monroe  James   Demo…
+## 10 &quot;In compliance with an usage coeval with the exi…  1825 Adams   John Q… Demo…
+## # … with 49 more rows, and abbreviated variable names ¹​President, ²​FirstName</code></pre>
 <p>This lets us work with tidy tools like <code>unnest_tokens</code> to
 analyze the text alongside the metadata.</p>
 <div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>inaug_words <span class="ot">&lt;-</span> inaug_td <span class="sc">%&gt;%</span></span>

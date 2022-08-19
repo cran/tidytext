@@ -1,7 +1,7 @@
-284545345322a896fa0de60accfd380b *DESCRIPTION
+51ff2877d785a8f470b7b9b4847d874a *DESCRIPTION
 60be9711aa00f169af385937d886c2d4 *LICENSE
 9300e27fe53d9f9b4b6765ee26046c6e *NAMESPACE
-afa0c4e2c67314f65f77bba4e0ac2135 *NEWS.md
+91ce824db62df243a6be00efcb97d600 *NEWS.md
 df1002122987f134616e7724720057b5 *R/bind_tf_idf.R
 fe2b083cb49e6a80aedf7695b7b0ba07 *R/compat_lazyeval.R
 fd7b676653fb636ede42741e730cfd2e *R/corpus_tidiers.R
@@ -14,7 +14,7 @@ d6defe958b32ffcc0751e2ebde1c4c53 *R/nma_words.R
 2ec468a8b9ac26dfd3b78428daf6ed11 *R/reorder_within.R
 60b73510de8d922777c6959f5f79b13c *R/sentiments.R
 ab02bdc8f457bf215dec5f8dea6efedf *R/sparse_casters.R
-23cb69bdb6cdb4ba4d740bf9a3218b4c *R/sparse_tidiers.R
+f9f943e8dbdac3236a93e89bbbf39894 *R/sparse_tidiers.R
 b8cf683b2cbc5ce3771ce090ee00595e *R/stm_tidiers.R
 4e805132839d84655a10a06ac9494903 *R/stop_words.R
 b4fe12876c37f8a22cde06e9701eecf0 *R/tidytext.R
@@ -26,7 +26,7 @@ e56a3cc618e50fe687386cd7c8d6a50b *R/unnest_ptb.R
 2fc697942f893f1cf874a2b3680e01f1 *R/unnest_tokens.R
 49d1d2ee8e546934199c73e07a900490 *R/unnest_tweets.R
 0e729382daae8faab5e148a160556b17 *README.md
-7ddcdfe4cccdfa06746b62feeafc66dd *build/vignette.rds
+1a2a8309c3f1faa5a46c8cef72694b66 *build/vignette.rds
 dffbb0fe70f8b13246e7a5ca78c17780 *data/nma_words.rda
 f30278ae776165a5ef03124f7fa2323e *data/parts_of_speech.rda
 01b0bbb85f2aed8ea8c7b7d9c091ef3d *data/sentiments.rda
@@ -34,13 +34,13 @@ fb19b7e42bcbff432db19d6f1ba11426 *data/stop_words.rda
 33f63d59a42106e6a7e32ec946ebb92a *inst/CITATION
 3f17e08d8c10dca9684a8ba708089f70 *inst/doc/tf_idf.R
 9d697f8a00519d8e26d3ae595fa1d679 *inst/doc/tf_idf.Rmd
-b906fed34711f9a475dce9703c52f524 *inst/doc/tf_idf.html
+02474bd44a1ae8116290f7c06c67080d *inst/doc/tf_idf.html
 8b48c4b20388a421a843b78a0da7d595 *inst/doc/tidying_casting.R
 056dccc56b25dfa150e9967d226d4c44 *inst/doc/tidying_casting.Rmd
-aa8ad21f16685b44ae22fccf85c46eb3 *inst/doc/tidying_casting.html
+b0fa8ad7e39756275e03f077f54437c0 *inst/doc/tidying_casting.html
 3b0ec73a1cce991259a284141752ff89 *inst/doc/tidytext.R
 acd5b233fba90d39b79705c8f3f3b3ff *inst/doc/tidytext.Rmd
-eb957d325d5a103535e042f793142f28 *inst/doc/tidytext.html
+570ffe4ee6d24ecb60b1b90d711415b7 *inst/doc/tidytext.html
 9321a877f1adad7b317b01c13a055885 *inst/extdata/books.rda
 27b10371f719f49f9a9d39313d87a740 *man/bind_tf_idf.Rd
 7abd84d1268ca1b9ee34a77c409bfec9 *man/cast_sparse.Rd
@@ -87,7 +87,7 @@ bee69d3465e5b4ea25b394eadf5c14b1 *tests/testthat/test-dictionary-tidiers.R
 9740a2c349b64b6257eba65c436357c3 *tests/testthat/test-lda-tidiers.R
 de0eedaf6bcd099893bd97bec29606af *tests/testthat/test-reorder-within.R
 e9e41a257db1f3c2667ebe120bb7bf0e *tests/testthat/test-sentiments.R
-14f22626fe29bde18170ef4b28f68cb9 *tests/testthat/test-sparse-casters.R
+22db530a2adceacf76b23fbfbc7b230e *tests/testthat/test-sparse-casters.R
 2b4ceb929a9a3a9d43fc66f9dd84d289 *tests/testthat/test-sparse-tidiers.R
 b9531951b4637fd88126e99d925097e1 *tests/testthat/test-stm-tidiers.R
 799f908a8327feb63f0176d8aba9e6d7 *tests/testthat/test-stop-words.R
