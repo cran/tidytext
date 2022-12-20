@@ -35,8 +35,8 @@ ordering. By default, mean.}
 manually if ___ can exist within one of your labels.}
 
 \item{...}{In \code{reorder_within} arguments passed on to
-\code{\link{reorder}}. In the scale functions, extra arguments passed on to
-\code{\link[ggplot2]{scale_x_discrete}} or \code{\link[ggplot2]{scale_y_discrete}}.}
+\code{\link[=reorder]{reorder()}}. In the scale functions, extra arguments passed on to
+\code{\link[ggplot2:scale_discrete]{ggplot2::scale_x_discrete()}} or \code{\link[ggplot2:scale_discrete]{ggplot2::scale_y_discrete()}}.}
 
 \item{labels}{Function to transform the labels of
 \code{\link[ggplot2:scale_discrete]{ggplot2::scale_x_discrete()}}, by default \code{reorder_func}.}
@@ -50,6 +50,7 @@ This is implemented as a bit of a hack: it appends ___ and then the facet
 at the end of each string.
 }
 \examples{
+\dontshow{if (rlang::is_installed(c("stopwords", "tidyr"))) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
 
 library(tidyr)
 library(ggplot2)
@@ -74,5 +75,5 @@ ggplot(mtcars, aes(reorder_within(carb, mpg, list(vs, am)), mpg)) +
   geom_boxplot() +
   scale_x_reordered() +
   facet_wrap(vs ~ am, scales = "free_x")
-
+\dontshow{\}) # examplesIf}
 }

@@ -45,14 +45,13 @@ test_that("tokenizing by word works", {
 
 })
 
-test_that("tokenizing errors with appropriate message", {
+test_that("tokenizing errors with appropriate error message", {
   d <- tibble(txt = c(
     "Because I could not stop for Death -",
     "He kindly stopped for me -"
   ))
-  expect_error(
-    d %>% unnest_tokens(word, txt, token = "word"),
-    "Error: Token must be a supported type, or a function that takes a character vector as input\nDid you mean token = words?"
+  expect_snapshot_error(
+    d %>% unnest_tokens(word, txt, token = "word")
   )
 })
 
@@ -211,6 +210,7 @@ test_that("unnest_tokens raises an error if custom tokenizer gives bad output", 
 
 
 test_that("tokenizing HTML works", {
+  skip_if_not_installed("hunspell")
   h <- tibble(
     row = 1:2,
     text = c("<h1>Text <b>is<b>", "<a href='example.com'>here</a>")
@@ -228,6 +228,7 @@ test_that("tokenizing HTML works", {
 
 
 test_that("tokenizing LaTeX works", {
+  skip_if_not_installed("hunspell")
   h <- tibble(
     row = 1:4,
     text = c(
@@ -432,3 +433,13 @@ test_that("Can't tokenize with list columns with collapse = TRUE", {
   ret <- unnest_tokens(df, word, txt, token = "sentences", collapse = NULL)
   expect_equal(nrow(ret), 2)
 })
+
+test_that("tokenizing tweets is deprecated", {
+  d <- tibble(txt = c(
+    "Because I could not stop for Death -",
+    "He kindly stopped for me -"),
+    line = 1:2)
+  expect_snapshot_error(d1 <- d %>% unnest_tokens(word, txt, token = "tweets"))
+})
+
+

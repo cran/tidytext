@@ -7,18 +7,15 @@
 #'
 #' @param token Unit for tokenizing, or a custom tokenizing function. Built-in
 #' options are "words" (default), "characters", "character_shingles", "ngrams",
-#' "skip_ngrams", "sentences", "lines", "paragraphs", "regex", "tweets"
-#' (tokenization by word that preserves usernames, hashtags, and URLS ), and
+#' "skip_ngrams", "sentences", "lines", "paragraphs", "regex", and
 #' "ptb" (Penn Treebank). If a function, should take a character vector and
 #' return a list of character vectors of the same length.
 #'
 #' @param format Either "text", "man", "latex", "html", or "xml". When the
 #' format is "text", this function uses the tokenizers package. If not "text",
-#' this uses the hunspell tokenizer, and can tokenize only by "word"
+#' this uses the hunspell tokenizer, and can tokenize only by "word".
 #'
-#' @param to_lower Whether to convert tokens to lowercase. If tokens include
-#' URLS (such as with \code{token = "tweets"}), such converted URLs may no
-#' longer be correct.
+#' @param to_lower Whether to convert tokens to lowercase.
 #'
 #' @param drop Whether original input column should get dropped. Ignored
 #' if the original input and new output column have the same name.
@@ -28,7 +25,7 @@
 #' @param input Input column that gets split as string or symbol.
 #'
 #'   The output/input arguments are passed by expression and support
-#'   \link[rlang]{quasiquotation}; you can unquote strings and symbols.
+#'   [quasiquotation][rlang::quasiquotation]; you can unquote strings and symbols.
 #'
 #' @param collapse A character vector of variables to collapse text across,
 #'  or `NULL`.
@@ -43,14 +40,16 @@
 #'   grouped data. Collapsing applies mostly to `token` options of "ngrams",
 #'   "skip_ngrams", "sentences", "lines", "paragraphs", or "regex".
 #'
-#' @param ... Extra arguments passed on to \link[tokenizers]{tokenizers}, such
-#' as \code{strip_punct} for "words" and "tweets", \code{n} and \code{k} for
-#' "ngrams" and "skip_ngrams", \code{strip_url} for "tweets", and
-#' \code{pattern} for "regex".
+#' @param ... Extra arguments passed on to [tokenizers][tokenizers::tokenizers], such
+#' as `strip_punct` for "words", `n` and `k` for "ngrams" and "skip_ngrams",
+#' and `pattern` for "regex".
 #'
 #' @details If format is anything other than "text", this uses the
-#' \code{\link[hunspell]{hunspell_parse}} tokenizer instead of the tokenizers package.
+#' [hunspell::hunspell_parse()] tokenizer instead of the tokenizers package.
 #' This does not yet have support for tokenizing by any unit other than words.
+#'
+#' Support for `token = "tweets"` was removed in tidytext 0.4.0 because of
+#' changes in upstream dependencies.
 #'
 #' @import dplyr
 #' @import rlang
@@ -62,7 +61,7 @@
 #'
 #' @name unnest_tokens
 #'
-#' @examples
+#' @examplesIf rlang::is_installed("hunspell")
 #'
 #' library(dplyr)
 #' library(janeaustenr)
@@ -162,10 +161,6 @@ unnest_tokens <- function(tbl, output, input, token = "words",
   ret[[output]] <- flatten_chr(output_lst)
 
   if (to_lower) {
-    if (!is_function(token))
-      if(token == "tweets") {
-        rlang::inform("Using `to_lower = TRUE` with `token = 'tweets'` may not preserve URLs.")
-      }
     ret[[output]] <- stringr::str_to_lower(ret[[output]])
   }
 
@@ -183,29 +178,39 @@ find_function <- function(token, format, to_lower, ...) {
 
   if (is_function(token)) {
     tokenfunc <- token
-  } else if (token %in% c(
+    return(tokenfunc)
+  }
+  if (token %in% c("tweets", "tweet")) {
+    lifecycle::deprecate_stop(
+      "0.4.0",
+      I('Support for `token = "tweets"`')
+    )
+  }
+  if (token %in% c(
     "word", "character",
     "character_shingle", "ngram",
     "skip_ngram", "sentence", "line",
     "paragraph", "tweet"
   )) {
-    rlang::abort(paste0(
-      "Error: Token must be a supported type, or a function that takes a character vector as input",
-      "\nDid you mean token = ", token, "s?"
+    cli::cli_abort(c(
+      "Token must be a supported type, or a function that takes a character vector as input",
+      i = 'Did you mean `token = "{token}s"`?'
     ))
-  } else if (format != "text") {
+  }
+  if (format != "text") {
     if (token != "words") {
       rlang::abort("Cannot tokenize by any unit except words when format is not text")
     }
-    tokenfunc <- function(col, ...) hunspell::hunspell_parse(col,
-                                                             format = format
+    rlang::check_installed("hunspell")
+    tokenfunc <- function(col, ...) hunspell::hunspell_parse(
+      col,
+      format = format
     )
   } else {
     tf <- get(paste0("tokenize_", token))
     if (token %in% c(
-      "characters", "character_shingles",
-      "words", "ngrams", "skip_ngrams",
-      "tweets", "ptb"
+      "characters", "character_shingles", "words",
+      "ngrams", "skip_ngrams", "ptb"
     )) {
       tokenfunc <- function(col, ...) tf(col, lowercase = to_lower, ...)
     } else {

@@ -1,6 +1,11 @@
 ## ----setup, echo=FALSE--------------------------------------------------------
 library(knitr)
-opts_chunk$set(warning = FALSE, message = FALSE)
+opts_chunk$set(
+  warning = FALSE, message = FALSE,
+  eval = requireNamespace("ggplot2", quietly = TRUE)             
+)
+
+## ----echo=FALSE---------------------------------------------------------------
 library(ggplot2)
 theme_set(theme_light())
 

@@ -23,15 +23,13 @@ unnest_ptb(
 \item{input}{Input column that gets split as string or symbol.
 
 The output/input arguments are passed by expression and support
-\link[rlang]{quasiquotation}; you can unquote strings and symbols.}
+\link[rlang:topic-inject]{quasiquotation}; you can unquote strings and symbols.}
 
 \item{format}{Either "text", "man", "latex", "html", or "xml". When the
 format is "text", this function uses the tokenizers package. If not "text",
-this uses the hunspell tokenizer, and can tokenize only by "word"}
+this uses the hunspell tokenizer, and can tokenize only by "word".}
 
-\item{to_lower}{Whether to convert tokens to lowercase. If tokens include
-URLS (such as with \code{token = "tweets"}), such converted URLs may no
-longer be correct.}
+\item{to_lower}{Whether to convert tokens to lowercase.}
 
 \item{drop}{Whether original input column should get dropped. Ignored
 if the original input and new output column have the same name.}
@@ -49,7 +47,7 @@ Grouping data specifies variables to collapse across in the same way as
 grouped data. Collapsing applies mostly to \code{token} options of "ngrams",
 "skip_ngrams", "sentences", "lines", "paragraphs", or "regex".}
 
-\item{...}{Extra arguments passed on to \link[tokenizers]{tokenizers}}
+\item{...}{Extra arguments passed on to \link[tokenizers:tokenizers]{tokenizers}}
 }
 \description{
 This function is a wrapper around \code{unnest_tokens( token = "ptb" )}.
