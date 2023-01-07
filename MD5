@@ -1,7 +1,7 @@
-c0f00641d258b29cc50dcae955d2887d *DESCRIPTION
+a56b6c09038e6b0f443750b999976022 *DESCRIPTION
 60be9711aa00f169af385937d886c2d4 *LICENSE
 9300e27fe53d9f9b4b6765ee26046c6e *NAMESPACE
-9cfbf9a8b4fb21435548174ee5304bf2 *NEWS.md
+9fe71570ab9a36f80c63e90d0d8a112e *NEWS.md
 cab4db293b5b8b35fb6055891eb22c26 *R/bind_tf_idf.R
 fe2b083cb49e6a80aedf7695b7b0ba07 *R/compat_lazyeval.R
 f9c894c6ea30692301b314775e7b45e2 *R/corpus_tidiers.R
@@ -15,7 +15,7 @@ c097b36d16384f063504cc1019cd9fc8 *R/parts_of_speech.R
 a580aad6b6c73e2659db9d70270f52b3 *R/sentiments.R
 bd5f3c3d46c50ba95da43de8f0a48ffc *R/sparse_casters.R
 f9f943e8dbdac3236a93e89bbbf39894 *R/sparse_tidiers.R
-6941427f28dbb5664c54ba519c6823f4 *R/stm_tidiers.R
+6b036ae740bbf02a54e87fa575b02c41 *R/stm_tidiers.R
 7ec036bac773ec0f1c991fd52cd755bd *R/stop_words.R
 b4fe12876c37f8a22cde06e9701eecf0 *R/tidytext.R
 0280c3e5510138a99481e2e4fd3d4035 *R/unnest_char.R
@@ -34,13 +34,13 @@ fb19b7e42bcbff432db19d6f1ba11426 *data/stop_words.rda
 33f63d59a42106e6a7e32ec946ebb92a *inst/CITATION
 8201073c550f5dd0965a2eccdbd682f2 *inst/doc/tf_idf.R
 24b5ab512cb8abf7c51d8770f32871d6 *inst/doc/tf_idf.Rmd
-4d913f89e64471d644df839b78eb74de *inst/doc/tf_idf.html
+98315995873dd9fce9c3b082e05e99b7 *inst/doc/tf_idf.html
 266504833957b4cafee2e9f95676760e *inst/doc/tidying_casting.R
 bee669e4435522957155e407525f7f76 *inst/doc/tidying_casting.Rmd
-0d99fce542e3baa97f7fdc5644a9c729 *inst/doc/tidying_casting.html
+9dad960f443247c98bb9b6e557b1e06f *inst/doc/tidying_casting.html
 bd884cd7f2cb6ee9a6369202772ec642 *inst/doc/tidytext.R
 e27cc017050e18d40035ba4fec98d83f *inst/doc/tidytext.Rmd
-6fa11db980bc36ef284bfae7a41840b2 *inst/doc/tidytext.html
+780c42f37d77d03a9b75f2233bbdd9bb *inst/doc/tidytext.html
 9321a877f1adad7b317b01c13a055885 *inst/extdata/books.rda
 ed20d65427b30e3e08373bcedf22723a *man/bind_tf_idf.Rd
 2e3362dd90d9bd80c2a79f148565eb28 *man/cast_sparse.Rd

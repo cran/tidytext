@@ -1,3 +1,7 @@
+# tidytext 0.4.1
+
+* Fixed bug for FREX stm tidier (#228)
+
 # tidytext 0.4.0
 
 * hunspell is now a suggested dependency, thanks to @MichaelChirico (#221)

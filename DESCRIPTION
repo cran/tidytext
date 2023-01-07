@@ -1,7 +1,7 @@
 Type: Package
 Package: tidytext
 Title: Text Mining using 'dplyr', 'ggplot2', and Other Tidy Tools
-Version: 0.4.0
+Version: 0.4.1
 Authors@R: c(
     person("Gabriela", "De Queiroz", , "gabidequeiroz@gmail.com", role = "ctb"),
     person("Colin", "Fay", , "contact@colinfay.me", role = "ctb",
@@ -42,7 +42,7 @@ Encoding: UTF-8
 LazyData: TRUE
 RoxygenNote: 7.2.2
 NeedsCompilation: no
-Packaged: 2022-12-20 17:39:54 UTC; juliasilge
+Packaged: 2023-01-07 23:06:42 UTC; juliasilge
 Author: Gabriela De Queiroz [ctb],
   Colin Fay [ctb] (<https://orcid.org/0000-0001-7343-1846>),
   Emil Hvitfeldt [ctb],
@@ -54,4 +54,4 @@ Author: Gabriela De Queiroz [ctb],
   Julia Silge [aut, cre] (<https://orcid.org/0000-0002-3671-836X>)
 Maintainer: Julia Silge <julia.silge@gmail.com>
 Repository: CRAN
-Date/Publication: 2022-12-20 18:10:02 UTC
+Date/Publication: 2023-01-07 23:30:02 UTC
