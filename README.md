@@ -81,7 +81,7 @@ original_books
 #>  8 ""                      Sense & Sensibility     8
 #>  9 ""                      Sense & Sensibility     9
 #> 10 "CHAPTER 1"             Sense & Sensibility    10
-#> # … with 73,412 more rows
+#> # ℹ 73,412 more rows
 ```
 
 To work with this as a tidy dataset, we need to restructure it as
@@ -107,7 +107,7 @@ tidy_books
 #>  8 Sense & Sensibility    10 chapter    
 #>  9 Sense & Sensibility    10 1          
 #> 10 Sense & Sensibility    13 the        
-#> # … with 725,045 more rows
+#> # ℹ 725,045 more rows
 ```
 
 This function uses the
@@ -144,7 +144,7 @@ tidy_books %>%
 #>  8 well   1523
 #>  9 every  1456
 #> 10 think  1440
-#> # … with 14,365 more rows
+#> # ℹ 14,365 more rows
 ```
 
 Sentiment analysis can be implemented as an inner join. Three sentiment
@@ -169,18 +169,18 @@ get_sentiments("bing")
 #>  8 abort       negative 
 #>  9 aborted     negative 
 #> 10 aborts      negative 
-#> # … with 6,776 more rows
+#> # ℹ 6,776 more rows
 
 janeaustensentiment <- tidy_books %>%
-  inner_join(get_sentiments("bing"), by = "word") %>% 
+  inner_join(get_sentiments("bing"), by = "word", relationship = "many-to-many") %>% 
   count(book, index = line %/% 80, sentiment) %>% 
-  spread(sentiment, n, fill = 0) %>% 
+  pivot_wider(names_from = sentiment, values_from = n, values_fill = 0) %>% 
   mutate(sentiment = positive - negative)
 
 janeaustensentiment
 #> # A tibble: 920 × 5
 #>    book                index negative positive sentiment
-#>    <fct>               <dbl>    <dbl>    <dbl>     <dbl>
+#>    <fct>               <dbl>    <int>    <int>     <int>
 #>  1 Sense & Sensibility     0       16       32        16
 #>  2 Sense & Sensibility     1       19       53        34
 #>  3 Sense & Sensibility     2       12       31        19
@@ -191,7 +191,7 @@ janeaustensentiment
 #>  8 Sense & Sensibility     7       23       51        28
 #>  9 Sense & Sensibility     8       30       40        10
 #> 10 Sense & Sensibility     9       15       19         4
-#> # … with 910 more rows
+#> # ℹ 910 more rows
 ```
 
 Now we can plot these sentiment scores across the plot trajectory of
@@ -201,11 +201,11 @@ each novel.
 library(ggplot2)
 
 ggplot(janeaustensentiment, aes(index, sentiment, fill = book)) +
-  geom_bar(stat = "identity", show.legend = FALSE) +
-  facet_wrap(~book, ncol = 2, scales = "free_x")
+  geom_col(show.legend = FALSE) +
+  facet_wrap(vars(book), ncol = 2, scales = "free_x")
 ```
 
-<img src="man/figures/README-unnamed-chunk-9-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-9-1.png" alt="Sentiment scores across the trajectories of Jane Austen's six published novels" width="100%" />
 
 For more examples of text mining using tidy data frames, see the
 tidytext vignette.
@@ -248,7 +248,7 @@ tidy(AssociatedPress)
 #>  8        1 appeared       1
 #>  9        1 arrested       1
 #> 10        1 assault        1
-#> # … with 302,021 more rows
+#> # ℹ 302,021 more rows
 ```
 
 We could find the most negative documents:
@@ -257,7 +257,7 @@ We could find the most negative documents:
 ap_sentiments <- tidy(AssociatedPress) %>%
   inner_join(get_sentiments("bing"), by = c(term = "word")) %>%
   count(document, sentiment, wt = count) %>%
-  spread(sentiment, n, fill = 0) %>%
+  pivot_wider(names_from = sentiment, values_from = n, values_fill = 0) %>%
   mutate(sentiment = positive - negative) %>%
   arrange(sentiment)
 ```
@@ -274,6 +274,7 @@ comparison <- tidy(AssociatedPress) %>%
   mutate(AP = AP / sum(AP),
          Austen = Austen / sum(Austen))
 
+
 comparison
 #> # A tibble: 4,730 × 3
 #>    word             AP     Austen
@@ -288,7 +289,7 @@ comparison
 #>  8 absence   0.0000776 0.000547  
 #>  9 absent    0.0000436 0.000247  
 #> 10 absolute  0.0000533 0.000128  
-#> # … with 4,720 more rows
+#> # ℹ 4,720 more rows
 
 library(scales)
 ggplot(comparison, aes(AP, Austen)) +
@@ -300,7 +301,7 @@ ggplot(comparison, aes(AP, Austen)) +
   geom_abline(color = "red")
 ```
 
-<img src="man/figures/README-unnamed-chunk-13-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-13-1.png" alt="Scatterplot for word frequencies in Jane Austen vs. AP news articles. Some words like &quot;cried&quot; are only common in Jane Austen, some words like &quot;national&quot; are only common in AP articles, and some word like &quot;time&quot; are common in both." width="100%" />
 
 For more examples of working with objects from other text mining
 packages using tidy data principles, see the

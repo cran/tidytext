@@ -70,13 +70,13 @@
 #' d
 #'
 #' d %>%
-#'   unnest_tokens(word, txt)
+#'   unnest_tokens(output = word, input = txt)
 #'
 #' d %>%
-#'   unnest_tokens(sentence, txt, token = "sentences")
+#'   unnest_tokens(output = sentence, input = txt, token = "sentences")
 #'
 #' d %>%
-#'   unnest_tokens(ngram, txt, token = "ngrams", n = 2)
+#'   unnest_tokens(output = ngram, input = txt, token = "ngrams", n = 2)
 #'
 #' d %>%
 #'   unnest_tokens(chapter, txt, token = "regex", pattern = "Chapter [\\\\d]")
@@ -158,7 +158,7 @@ unnest_tokens <- function(tbl, output, input, token = "words",
 
   tbl_indices <- vec_rep_each(seq_len(nrow(tbl)), lengths(output_lst))
   ret <- vec_slice(tbl, tbl_indices)
-  ret[[output]] <- flatten_chr(output_lst)
+  ret[[output]] <- purrr::list_c(output_lst)
 
   if (to_lower) {
     ret[[output]] <- stringr::str_to_lower(ret[[output]])

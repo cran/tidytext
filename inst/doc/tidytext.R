@@ -1,11 +1,11 @@
-## ----setup, echo=FALSE--------------------------------------------------------
+## -----------------------------------------------------------------------------
 library(knitr)
 opts_chunk$set(
   warning = FALSE, message = FALSE,
   eval = requireNamespace("wordcloud", quietly = TRUE) && requireNamespace("ggplot2", quietly = TRUE)
   )
 
-## ----echo=FALSE---------------------------------------------------------------
+## -----------------------------------------------------------------------------
 library(ggplot2)
 theme_set(theme_light())
 
@@ -26,7 +26,7 @@ original_books
 ## -----------------------------------------------------------------------------
 library(tidytext)
 tidy_books <- original_books %>%
-  unnest_tokens(word, text)
+  unnest_tokens(output = word, input = text)
 
 tidy_books
 
@@ -52,43 +52,43 @@ library(tidyr)
 bing <- get_sentiments("bing")
 
 janeaustensentiment <- tidy_books %>%
-  inner_join(bing) %>%
+  inner_join(bing, relationship = "many-to-many") %>%
   count(book, index = line %/% 80, sentiment) %>%
-  spread(sentiment, n, fill = 0) %>%
+  pivot_wider(names_from = sentiment, values_from = n, values_fill = 0) %>% 
   mutate(sentiment = positive - negative)
 
-## ---- fig.width=7, fig.height=7, warning=FALSE--------------------------------
+## -----------------------------------------------------------------------------
 library(ggplot2)
 
 ggplot(janeaustensentiment, aes(index, sentiment, fill = book)) +
   geom_bar(stat = "identity", show.legend = FALSE) +
-  facet_wrap(~book, ncol = 2, scales = "free_x")
+  facet_wrap(vars(book), ncol = 2, scales = "free_x")
 
 ## -----------------------------------------------------------------------------
 bing_word_counts <- tidy_books %>%
-  inner_join(bing) %>%
+  inner_join(bing, relationship = "many-to-many") %>%
   count(word, sentiment, sort = TRUE)
 
 bing_word_counts
 
-## ---- fig.width=7, fig.height=6-----------------------------------------------
+## -----------------------------------------------------------------------------
 bing_word_counts %>%
-  filter(n > 150) %>%
-  mutate(n = ifelse(sentiment == "negative", -n, n)) %>%
+  group_by(sentiment) %>%
+  slice_max(n, n = 10) %>%
   mutate(word = reorder(word, n)) %>%
-  ggplot(aes(word, n, fill = sentiment)) +
-  geom_col() +
-  coord_flip() +
-  labs(y = "Contribution to sentiment")
+  ggplot(aes(n, word, fill = sentiment)) +
+  geom_col(show.legend = FALSE) +
+  facet_wrap(vars(sentiment), scales = "free_y") +
+  labs(x = "Contribution to sentiment", y = NULL)
 
-## ---- fig.height=6, fig.width=6-----------------------------------------------
+## -----------------------------------------------------------------------------
 library(wordcloud)
 
 cleaned_books %>%
   count(word) %>%
   with(wordcloud(word, n, max.words = 100))
 
-## ----wordcloud, fig.height=5, fig.width=5-------------------------------------
+## -----------------------------------------------------------------------------
 library(reshape2)
 
 tidy_books %>%
@@ -100,7 +100,7 @@ tidy_books %>%
 
 ## -----------------------------------------------------------------------------
 PandP_sentences <- tibble(text = prideprejudice) %>% 
-  unnest_tokens(sentence, text, token = "sentences")
+  unnest_tokens(output = sentence, input = text, token = "sentences")
 
 ## -----------------------------------------------------------------------------
 PandP_sentences$sentence[2]
@@ -130,5 +130,5 @@ tidy_books %>%
   left_join(wordcounts, by = c("book", "chapter")) %>%
   mutate(ratio = negativewords/words) %>%
   filter(chapter != 0) %>%
-  top_n(1)
+  slice_max(ratio, n = 1)
 

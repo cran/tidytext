@@ -1,11 +1,10 @@
-## ----echo = FALSE-------------------------------------------------------------
+## -----------------------------------------------------------------------------
 knitr::opts_chunk$set(
-  fig.width = 7, fig.height = 7, 
   message = FALSE, warning = FALSE,
   eval = requireNamespace("tm", quietly = TRUE) && requireNamespace("quanteda", quietly = TRUE) && requireNamespace("topicmodels", quietly = TRUE) && requireNamespace("ggplot2", quietly = TRUE)
-  )
+)
 
-## ----echo=FALSE---------------------------------------------------------------
+## -----------------------------------------------------------------------------
 library(ggplot2)
 theme_set(theme_bw())
 
@@ -22,7 +21,7 @@ ap_td <- tidy(AssociatedPress)
 
 ## -----------------------------------------------------------------------------
 ap_sentiments <- ap_td %>%
-  inner_join(get_sentiments("bing"), by = c(term = "word"))
+  inner_join(get_sentiments("bing"), join_by(term == word))
 
 ap_sentiments
 
@@ -31,28 +30,29 @@ library(tidyr)
 
 ap_sentiments %>%
   count(document, sentiment, wt = count) %>%
-  spread(sentiment, n, fill = 0) %>%
+  pivot_wider(names_from = sentiment, values_from = n, values_fill = 0) %>%
   mutate(sentiment = positive - negative) %>%
   arrange(sentiment)
 
-## ----fig.width = 7, fig.height = 5--------------------------------------------
+## -----------------------------------------------------------------------------
 library(ggplot2)
 
 ap_sentiments %>%
   count(sentiment, term, wt = count) %>%
-  filter(n >= 150) %>%
-  mutate(n = ifelse(sentiment == "negative", -n, n)) %>%
+  group_by(sentiment) %>%
+  slice_max(n, n = 10) %>%
   mutate(term = reorder(term, n)) %>%
-  ggplot(aes(term, n, fill = sentiment)) +
-  geom_bar(stat = "identity") +
-  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
-  ylab("Contribution to sentiment")
+  ggplot(aes(n, term, fill = sentiment)) +
+  geom_col(show.legend = FALSE) +
+  facet_wrap(vars(sentiment), scales = "free_y") +
+  labs(x = "Contribution to sentiment", y = NULL)
 
 ## -----------------------------------------------------------------------------
 library(methods)
 
 data("data_corpus_inaugural", package = "quanteda")
-d <- quanteda::dfm(data_corpus_inaugural, verbose = FALSE)
+d <- quanteda::tokens(data_corpus_inaugural) %>%
+  quanteda::dfm()
 
 d
 
@@ -113,8 +113,7 @@ inaug_freq <- inaug_words %>%
   count(Year, word) %>%
   complete(Year, word, fill = list(n = 0)) %>%
   group_by(Year) %>%
-  mutate(year_total = sum(n),
-         percent = n / year_total) %>%
+  mutate(year_total = sum(n), percent = n / year_total) %>%
   ungroup()
 
 inaug_freq
@@ -124,8 +123,9 @@ library(broom)
 models <- inaug_freq %>%
   group_by(word) %>%
   filter(sum(n) > 50) %>%
-  do(tidy(glm(cbind(n, year_total - n) ~ Year, .,
-              family = "binomial"))) %>%
+  group_modify(
+    ~ tidy(glm(cbind(n, year_total - n) ~ Year, ., family = "binomial"))
+  ) %>%
   ungroup() %>%
   filter(term == "Year")
 
@@ -143,21 +143,19 @@ models %>%
   ggplot(aes(estimate, adjusted.p.value)) +
   geom_point() +
   scale_y_log10() +
-  geom_text(aes(label = word), vjust = 1, hjust = 1,
-            check_overlap = TRUE) +
-  xlab("Estimated change over time") +
-  ylab("Adjusted p-value")
+  geom_text(aes(label = word), vjust = 1, hjust = 1, check_overlap = TRUE) +
+  labs(x = "Estimated change over time", y = "Adjusted p-value")
 
 ## -----------------------------------------------------------------------------
 library(scales)
 
 models %>%
-  top_n(6, abs(estimate)) %>%
+  slice_max(abs(estimate), n = 6) %>%
   inner_join(inaug_freq) %>%
   ggplot(aes(Year, percent)) +
   geom_point() +
   geom_smooth() +
-  facet_wrap(~ word) +
+  facet_wrap(vars(word)) +
   scale_y_continuous(labels = percent_format()) +
-  ylab("Frequency of word in speech")
+  labs(y = "Frequency of word in speech")
 
