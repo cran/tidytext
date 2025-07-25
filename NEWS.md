@@ -1,3 +1,7 @@
+# tidytext 0.4.3
+
+* Updated package anchors in roxygen comments
+
 # tidytext 0.4.2
 
 * Added alt text to figures in vignettes and README (#233)
